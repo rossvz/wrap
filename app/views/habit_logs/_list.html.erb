@@ -1,0 +1,27 @@
+<%= turbo_frame_tag "habit_logs" do %>
+  <div class="mt-6">
+    <div class="flex items-end justify-between gap-6">
+      <div>
+        <p class="text-xs font-black uppercase tracking-widest">History</p>
+        <h3 class="mt-1 text-2xl font-black leading-tight">Recent logs</h3>
+      </div>
+      <p class="text-sm text-black/70">
+        Showing <%= habit_logs.size %> / 30
+      </p>
+    </div>
+
+    <div class="mt-4 grid gap-4">
+      <% if habit_logs.any? %>
+        <% habit_logs.each do |habit_log| %>
+          <%= render "habit_logs/log", habit: habit, habit_log: habit_log %>
+        <% end %>
+      <% else %>
+        <div class="nb-card nb-card--tight">
+          <p class="font-bold">No logs yet.</p>
+          <p class="text-sm text-black/70">Add minutes above and they’ll show up here.</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+

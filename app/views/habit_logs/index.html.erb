@@ -1,0 +1,39 @@
+<% content_for :title, "#{@habit.name} • History" %>
+
+<div class="nb-page">
+  <div class="nb-page-header">
+    <div>
+      <p class="text-xs font-black uppercase tracking-widest">History</p>
+      <h1 class="mt-1 text-4xl font-black leading-tight"><%= @habit.name %></h1>
+      <p class="mt-1 text-sm text-black/70">Every log is minutes. This is your receipts.</p>
+    </div>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <%= link_to "Back", habit_path(@habit), class: "nb-btn nb-btn--white" %>
+      <%= link_to "All habits", habits_path, class: "nb-btn nb-btn--white" %>
+    </div>
+  </div>
+
+  <%= render "habit_logs/form", habit: @habit, habit_log: @habit_log %>
+
+  <div class="mt-8">
+    <div class="nb-card">
+      <div class="flex items-center justify-between gap-6">
+        <div>
+          <p class="text-xs font-black uppercase tracking-widest">Total</p>
+          <p class="mt-1 text-3xl font-black"><%= format_duration(@habit_logs.sum(&:duration_minutes)) %></p>
+        </div>
+        <div class="nb-pill nb-pill--white">
+          <span class="inline-block h-2 w-2 border-2 border-black bg-black"></span>
+          <span><%= @habit_logs.count %> logs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 grid gap-4">
+      <% @habit_logs.each do |habit_log| %>
+        <%= render "habit_logs/log", habit: @habit, habit_log: habit_log %>
+      <% end %>
+    </div>
+  </div>
+</div>
+

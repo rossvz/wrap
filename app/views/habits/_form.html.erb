@@ -1,0 +1,43 @@
+<%= form_with(model: habit, class: "contents") do |form| %>
+  <% if habit.errors.any? %>
+    <div id="error_explanation" class="nb-card nb-card--tight nb-card--alert mt-4">
+      <h2><%= pluralize(habit.errors.count, "error") %> prohibited this habit from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% habit.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mt-6">
+    <%= form.label :name, class: "nb-label" %>
+    <%= form.text_field :name, class: "nb-input mt-2", placeholder: "Meditation" %>
+  </div>
+
+  <div class="mt-4">
+    <%= form.label :description, class: "nb-label" %>
+    <%= form.textarea :description, rows: 4, class: "nb-input mt-2", placeholder: "Why it matters, what counts…" %>
+  </div>
+
+  <div class="mt-4 grid gap-4 md:grid-cols-12">
+    <div class="md:col-span-6">
+      <%= form.label :color, "Card color (hex)", class: "nb-label" %>
+      <%= form.text_field :color, class: "nb-input mt-2", placeholder: "#FDE047" %>
+      <p class="mt-2 text-xs text-black/70">Bold is better. Try: <span class="font-mono">#A7F3D0</span>, <span class="font-mono">#BFDBFE</span>, <span class="font-mono">#FBCFE8</span>.</p>
+    </div>
+
+    <div class="md:col-span-6">
+      <div class="mt-0 flex items-center gap-3">
+        <%= form.check_box :active, class: "nb-input !w-5 !h-5" %>
+        <%= form.label :active, "Active (show on dashboard)", class: "nb-label !text-sm !normal-case !tracking-normal" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center">
+    <%= form.submit class: "nb-btn nb-btn--yellow" %>
+    <%= link_to "Cancel", habits_path, class: "nb-btn nb-btn--white" %>
+  </div>
+<% end %>

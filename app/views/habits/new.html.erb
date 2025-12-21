@@ -1,0 +1,15 @@
+<% content_for :title, "New habit" %>
+
+<div class="nb-page">
+  <div class="nb-page-header">
+    <div>
+      <p class="text-xs font-black uppercase tracking-widest">Habits</p>
+      <h1 class="mt-1 text-5xl font-black leading-tight">New habit</h1>
+      <p class="mt-2 text-sm text-black/70">Make it specific. Make it measurable. Make it colorful.</p>
+    </div>
+  </div>
+
+  <div class="nb-card">
+    <%= render "form", habit: @habit %>
+  </div>
+</div>
