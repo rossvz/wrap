@@ -3,11 +3,13 @@
 one:
   habit: one
   logged_on: 2025-12-21
-  duration_minutes: 1
-  notes: MyText
+  start_hour: 9
+  end_hour: 11
+  notes: Morning reading session
 
 two:
   habit: two
   logged_on: 2025-12-21
-  duration_minutes: 1
-  notes: MyText
+  start_hour: 14
+  end_hour: 16
+  notes: Afternoon coding

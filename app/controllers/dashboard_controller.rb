@@ -1,26 +1,32 @@
 class DashboardController < ApplicationController
   def index
     @date = Date.current
-
     @habits = Habit.where(active: true).order(created_at: :asc)
 
-    logs = HabitLog.where(habit_id: @habits.select(:id))
+    # Load all time blocks for today
+    @time_blocks = HabitLog.includes(:habit)
+                          .where(logged_on: @date)
+                          .where(habit_id: @habits.select(:id))
+                          .order(:start_hour)
 
+    # Calculate total hours logged today
+    @total_hours = @time_blocks.sum(&:duration_hours).round(1)
+
+    # Calculate totals for stats
     week_range = @date.beginning_of_week..@date.end_of_week
-    month_range = @date.beginning_of_month..@date.end_of_month
+    all_logs = HabitLog.where(habit_id: @habits.select(:id))
 
     @totals = {
-      today: logs.where(logged_on: @date).sum(:duration_minutes),
-      week: logs.where(logged_on: week_range).sum(:duration_minutes),
-      month: logs.where(logged_on: month_range).sum(:duration_minutes),
-      all_time: logs.sum(:duration_minutes)
+      today: @total_hours,
+      week: calculate_total_hours(all_logs.where(logged_on: week_range)),
+      all_time: calculate_total_hours(all_logs)
     }
+  end
 
-    @minutes_by_habit = {
-      today: logs.where(logged_on: @date).group(:habit_id).sum(:duration_minutes),
-      week: logs.where(logged_on: week_range).group(:habit_id).sum(:duration_minutes),
-      month: logs.where(logged_on: month_range).group(:habit_id).sum(:duration_minutes),
-      all_time: logs.group(:habit_id).sum(:duration_minutes)
-    }
+  private
+
+  def calculate_total_hours(logs)
+    # Sum duration for each log (end_hour - start_hour)
+    logs.sum("end_hour - start_hour").to_f.round(1)
   end
 end

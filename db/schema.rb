@@ -10,15 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_21_035713) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_21_203302) do
   create_table "habit_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "duration_minutes", default: 0, null: false
+    t.decimal "end_hour", precision: 3, scale: 1
     t.integer "habit_id", null: false
     t.date "logged_on", null: false
     t.text "notes"
+    t.decimal "start_hour", precision: 3, scale: 1
     t.datetime "updated_at", null: false
-    t.index ["habit_id", "logged_on"], name: "index_habit_logs_on_habit_id_and_logged_on", unique: true
+    t.index ["habit_id", "logged_on"], name: "index_habit_logs_on_habit_id_and_logged_on"
     t.index ["habit_id"], name: "index_habit_logs_on_habit_id"
   end
 

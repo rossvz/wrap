@@ -1,26 +1,34 @@
 class HabitLogsController < ApplicationController
-  before_action :set_habit
+  before_action :set_habit, only: %i[index update destroy]
   before_action :set_habit_log, only: %i[update destroy]
 
   # GET /habits/:habit_id/logs
   def index
     @habit_logs = @habit.habit_logs.most_recent_first
-    @habit_log = @habit.habit_logs.new(logged_on: Date.current)
+    @habit_log = @habit.habit_logs.new(logged_on: Date.current, start_hour: 9, end_hour: 10)
   end
 
-  # POST /habits/:habit_id/logs
+  # POST /habit_logs (standalone route for timeline)
+  # POST /habits/:habit_id/logs (nested route)
   def create
-    @habit_log = @habit.habit_logs.find_or_initialize_by(logged_on: habit_log_params[:logged_on] || Date.current)
+    habit = find_or_create_habit
 
-    if @habit_log.update(habit_log_params)
+    unless habit
+      redirect_to dashboard_path, alert: "Could not find or create habit."
+      return
+    end
+
+    @habit_log = habit.habit_logs.new(habit_log_params)
+
+    if @habit_log.save
       respond_to do |format|
-        format.turbo_stream { render_update_streams(notice: "Logged.") }
-        format.html { redirect_to habit_path(@habit), notice: "Logged." }
+        format.turbo_stream { render_dashboard_update(notice: "Time block logged.") }
+        format.html { redirect_to dashboard_path, notice: "Time block logged." }
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("habit_log_form", partial: "habit_logs/form", locals: { habit: @habit, habit_log: @habit_log }), status: :unprocessable_entity }
-        format.html { redirect_to habit_path(@habit), alert: @habit_log.errors.full_messages.to_sentence }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash", locals: { alert: @habit_log.errors.full_messages.to_sentence }), status: :unprocessable_entity }
+        format.html { redirect_to dashboard_path, alert: @habit_log.errors.full_messages.to_sentence }
       end
     end
   end
@@ -45,31 +53,58 @@ class HabitLogsController < ApplicationController
     @habit_log.destroy!
 
     respond_to do |format|
-      format.turbo_stream { render_update_streams(notice: "Deleted.") }
-      format.html { redirect_to habit_path(@habit), notice: "Deleted." }
+      format.turbo_stream { render_dashboard_update(notice: "Time block deleted.") }
+      format.html { redirect_to dashboard_path, notice: "Time block deleted." }
     end
   end
 
   private
-    def set_habit
-      @habit = Habit.find(params.expect(:habit_id))
+
+  def set_habit
+    @habit = Habit.find(params.expect(:habit_id))
+  end
+
+  def set_habit_log
+    @habit_log = @habit.habit_logs.find(params.expect(:id))
+  end
+
+  def habit_log_params
+    params.expect(habit_log: %i[logged_on start_hour end_hour notes])
+  end
+
+  def find_or_create_habit
+    # If habit_id is provided directly in params (from nested route or form)
+    if params[:habit_id].present?
+      return Habit.find_by(id: params[:habit_id])
     end
 
-    def set_habit_log
-      @habit_log = @habit.habit_logs.find(params.expect(:id))
+    # If habit_id is in habit_log params
+    if params[:habit_log][:habit_id].present?
+      return Habit.find_by(id: params[:habit_log][:habit_id])
     end
 
-    def habit_log_params
-      params.expect(habit_log: %i[logged_on duration_minutes notes])
+    # If new_habit_name is provided, create a new habit
+    if params[:habit_log][:new_habit_name].present?
+      name = params[:habit_log][:new_habit_name].strip
+      return Habit.create(name: name)
     end
 
-    def render_update_streams(notice:)
-      fresh_form_log = @habit.habit_logs.find_by(logged_on: Date.current) || @habit.habit_logs.new(logged_on: Date.current)
+    nil
+  end
 
-      render turbo_stream: [
-        turbo_stream.replace("flash", partial: "shared/flash", locals: { notice: notice }),
-        turbo_stream.replace("habit_log_form", partial: "habit_logs/form", locals: { habit: @habit, habit_log: fresh_form_log }),
-        turbo_stream.replace("habit_logs", partial: "habit_logs/list", locals: { habit: @habit, habit_logs: @habit.habit_logs.most_recent_first.limit(30) })
-      ]
-    end
+  def render_dashboard_update(notice:)
+    render turbo_stream: [
+      turbo_stream.replace("flash", partial: "shared/flash", locals: { notice: notice })
+    ]
+  end
+
+  def render_update_streams(notice:)
+    fresh_form_log = @habit.habit_logs.find_by(logged_on: Date.current) || @habit.habit_logs.new(logged_on: Date.current, start_hour: 9, end_hour: 10)
+
+    render turbo_stream: [
+      turbo_stream.replace("flash", partial: "shared/flash", locals: { notice: notice }),
+      turbo_stream.replace("habit_log_form", partial: "habit_logs/form", locals: { habit: @habit, habit_log: fresh_form_log }),
+      turbo_stream.replace("habit_logs", partial: "habit_logs/list", locals: { habit: @habit, habit_logs: @habit.habit_logs.most_recent_first.limit(30) })
+    ]
+  end
 end

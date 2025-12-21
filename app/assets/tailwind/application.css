@@ -107,4 +107,20 @@
   .nb-btn--red {
     @apply bg-rose-300;
   }
+
+  /* Timeline styles */
+  .timeline-container {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .timeline-section {
+    position: relative;
+  }
+
+  .timeline-hour {
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+  }
 }

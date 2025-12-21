@@ -27,16 +27,8 @@
       <%= form.hidden_field :color, data: { color_picker_target: "input" } %>
       
       <div class="mt-2 flex flex-wrap gap-2">
-        <% [
-          ["#FDE047", "bg-yellow-300"],
-          ["#BEF264", "bg-lime-300"],
-          ["#FDA4AF", "bg-rose-300"],
-          ["#F0ABFC", "bg-fuchsia-300"],
-          ["#7DD3FC", "bg-sky-300"],
-          ["#6EE7B7", "bg-emerald-300"],
-          ["#FDBA74", "bg-orange-300"],
-          ["#C4B5FD", "bg-violet-300"]
-        ].each do |hex, bg_class| %>
+        <% Habit::COLORS.each do |color| %>
+          <% hex, bg_class = color[:hex], color[:class] %>
           <button type="button"
                   class="h-10 w-10 border-2 border-black <%= bg_class %> transition-transform hover:scale-110 active:scale-95 cursor-pointer"
                   style="box-shadow: 2px 2px 0 #000;"

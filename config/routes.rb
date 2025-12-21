@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   root "dashboard#index"
   get "dashboard" => "dashboard#index"
 
+  # Standalone route for creating habit logs from the timeline
+  resources :habit_logs, only: [:create]
+
   resources :habits do
     resources :habit_logs, path: "logs", only: %i[index create update destroy]
   end

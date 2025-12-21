@@ -8,7 +8,8 @@ class HabitsController < ApplicationController
 
   # GET /habits/1 or /habits/1.json
   def show
-    @today_log = @habit.habit_logs.find_by(logged_on: Date.current) || @habit.habit_logs.new(logged_on: Date.current)
+    @today_log = @habit.habit_logs.find_by(logged_on: Date.current) ||
+                 @habit.habit_logs.new(logged_on: Date.current, start_hour: 9, end_hour: 10)
     @recent_logs = @habit.habit_logs.most_recent_first.limit(30)
   end
 

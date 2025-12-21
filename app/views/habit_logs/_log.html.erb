@@ -1,19 +1,21 @@
 <div id="<%= dom_id(habit_log) %>" class="nb-card nb-card--tight">
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 flex-wrap">
       <div class="nb-pill nb-pill--white">
         <span class="inline-block h-2 w-2 border-2 border-black bg-black"></span>
         <span><%= habit_log.logged_on.to_s %></span>
       </div>
-      <p class="text-xl font-black"><%= format_duration(habit_log.duration_minutes) %></p>
+      <p class="text-xl font-black"><%= habit_log.time_range_display %></p>
+      <div class="nb-pill nb-pill--white">
+        <span><%= format_hours(habit_log.duration_hours) %></span>
+      </div>
       <% if habit_log.notes.present? %>
         <p class="text-sm text-black/70"><%= habit_log.notes %></p>
       <% end %>
     </div>
 
     <div class="flex gap-2">
-      <%= button_to "Delete", habit_habit_log_path(habit, habit_log), method: :delete, class: "nb-btn nb-btn--red", data: { turbo_confirm: "Delete this log?" } %>
+      <%= button_to "Delete", habit_habit_log_path(habit, habit_log), method: :delete, class: "nb-btn nb-btn--red", data: { turbo_confirm: "Delete this time block?" } %>
     </div>
   </div>
 </div>
-
