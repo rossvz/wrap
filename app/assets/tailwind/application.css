@@ -1,5 +1,98 @@
 @import "tailwindcss";
 
+/* Theme system with CSS custom properties */
+
+/* Default theme - bold, colorful and fun */
+:root,
+[data-theme="default"] {
+  /* UI colors */
+  --bg-body: #fff7ed;
+  --bg-card: white;
+  --bg-nav: white;
+  --accent-primary: #f0abfc; /* fuchsia for logo */
+  --accent-cta: #fde047; /* yellow for primary buttons */
+  --accent-notice: #bef264; /* lime for notices */
+  --accent-alert: #fda4af; /* rose for alerts */
+
+  /* Time-of-day section backgrounds */
+  --bg-morning: #fffbeb; /* amber-50 */
+  --bg-afternoon: #f0f9ff; /* sky-50 */
+  --bg-evening: #eef2ff; /* indigo-50 */
+
+  /* Stats card colors */
+  --bg-stat-today: #a7f3d0; /* emerald-200 */
+  --bg-stat-week: #bfdbfe; /* blue-200 */
+  --bg-stat-alltime: #fde68a; /* amber-200 */
+
+  /* Habit colors (8 vibrant options) */
+  --habit-color-1: #fde047; /* yellow-300 */
+  --habit-color-2: #bef264; /* lime-300 */
+  --habit-color-3: #fda4af; /* rose-300 */
+  --habit-color-4: #f0abfc; /* fuchsia-300 */
+  --habit-color-5: #7dd3fc; /* sky-300 */
+  --habit-color-6: #6ee7b7; /* emerald-300 */
+  --habit-color-7: #fdba74; /* orange-300 */
+  --habit-color-8: #c4b5fd; /* violet-300 */
+}
+
+/* Monochrome Magic theme - elegant grayscale */
+[data-theme="monochrome"] {
+  /* UI colors */
+  --bg-body: #f5f5f5;
+  --bg-card: white;
+  --bg-nav: white;
+  --accent-primary: #6b7280; /* gray-500 */
+  --accent-cta: #374151; /* gray-700 */
+  --accent-notice: #d1d5db; /* gray-300 */
+  --accent-alert: #9ca3af; /* gray-400 */
+
+  /* Time-of-day section backgrounds */
+  --bg-morning: #fafafa;
+  --bg-afternoon: #f5f5f5;
+  --bg-evening: #f0f0f0;
+
+  /* Stats card colors */
+  --bg-stat-today: #e5e7eb; /* gray-200 */
+  --bg-stat-week: #d1d5db; /* gray-300 */
+  --bg-stat-alltime: #f3f4f6; /* gray-100 */
+
+  /* Habit colors (8 graduated grays with good contrast) */
+  --habit-color-1: #1f2937; /* gray-800 - darkest */
+  --habit-color-2: #374151; /* gray-700 */
+  --habit-color-3: #4b5563; /* gray-600 */
+  --habit-color-4: #6b7280; /* gray-500 */
+  --habit-color-5: #9ca3af; /* gray-400 */
+  --habit-color-6: #d1d5db; /* gray-300 */
+  --habit-color-7: #e5e7eb; /* gray-200 */
+  --habit-color-8: #f3f4f6; /* gray-100 - lightest */
+}
+
+/* Text contrast variables per theme */
+:root,
+[data-theme="default"] {
+  /* Default theme: all habit colors are light, so black text works */
+  --habit-text-1: black;
+  --habit-text-2: black;
+  --habit-text-3: black;
+  --habit-text-4: black;
+  --habit-text-5: black;
+  --habit-text-6: black;
+  --habit-text-7: black;
+  --habit-text-8: black;
+}
+
+[data-theme="monochrome"] {
+  /* Monochrome theme: dark colors (1-4) need white text, light colors (5-8) need black text */
+  --habit-text-1: white;
+  --habit-text-2: white;
+  --habit-text-3: white;
+  --habit-text-4: white;
+  --habit-text-5: black;
+  --habit-text-6: black;
+  --habit-text-7: black;
+  --habit-text-8: black;
+}
+
 /* Neobrutalist-ish design tokens + components (Tailwind v4 CSS-first) */
 
 @layer base {
@@ -8,7 +101,7 @@
   }
 
   body {
-    background: #fff7ed;
+    background: var(--bg-body);
     color: #000;
   }
 
@@ -28,11 +121,13 @@
   }
 
   .nb-nav {
-    @apply border-b-2 border-black bg-white;
+    @apply border-b-2 border-black;
+    background: var(--bg-nav);
   }
 
   .nb-logo {
-    @apply grid h-12 w-12 place-items-center border-2 border-black bg-fuchsia-300 text-lg font-black;
+    @apply grid h-12 w-12 place-items-center border-2 border-black text-lg font-black;
+    background: var(--accent-primary);
     box-shadow: 4px 4px 0 #000;
   }
 
@@ -41,12 +136,14 @@
   }
 
   .nb-page-header {
-    @apply flex flex-col gap-4 border-2 border-black bg-white p-6 sm:flex-row sm:items-end sm:justify-between;
+    @apply flex flex-col gap-4 border-2 border-black p-6 sm:flex-row sm:items-end sm:justify-between;
+    background: var(--bg-card);
     box-shadow: 8px 8px 0 #000;
   }
 
   .nb-card {
-    @apply border-2 border-black bg-white p-6;
+    @apply border-2 border-black p-6;
+    background: var(--bg-card);
     box-shadow: 8px 8px 0 #000;
   }
 
@@ -56,11 +153,11 @@
   }
 
   .nb-card--notice {
-    @apply bg-lime-200;
+    background: var(--accent-notice);
   }
 
   .nb-card--alert {
-    @apply bg-rose-200;
+    background: var(--accent-alert);
   }
 
   .nb-label {
@@ -68,7 +165,8 @@
   }
 
   .nb-input {
-    @apply w-full border-2 border-black bg-white px-3 py-2 font-medium outline-none;
+    @apply w-full border-2 border-black px-3 py-2 font-medium outline-none;
+    background: var(--bg-card);
     box-shadow: 3px 3px 0 #000;
   }
 
@@ -83,12 +181,14 @@
   }
 
   .nb-pill--white {
-    @apply bg-white;
+    background: var(--bg-card);
+    color: black; /* Always black text on white background */
   }
 
   .nb-btn {
     @apply inline-flex items-center justify-center gap-2 border-2 border-black px-4 py-2 text-sm font-black transition;
     box-shadow: 4px 4px 0 #000;
+    color: black; /* Default to black text */
   }
 
   .nb-btn:hover {
@@ -97,15 +197,22 @@
   }
 
   .nb-btn--yellow {
-    @apply bg-yellow-300;
+    background: var(--accent-cta);
+  }
+
+  /* Ensure text contrast on CTA button in monochrome */
+  [data-theme="monochrome"] .nb-btn--yellow {
+    color: white;
   }
 
   .nb-btn--white {
-    @apply bg-white;
+    background: var(--bg-card);
+    color: black; /* Always black text on white background */
   }
 
   .nb-btn--red {
-    @apply bg-rose-300;
+    background: var(--accent-alert);
+    color: black; /* Always black text */
   }
 
   /* Timeline styles */
@@ -130,11 +237,97 @@
   }
 
   .timeline-hour:hover .hour-slot::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 2px;
     border: 2px dashed rgba(0, 0, 0, 0.15);
     border-radius: 0.5rem;
     pointer-events: none;
+  }
+
+  /* Time-of-day backgrounds */
+  .bg-morning {
+    background: var(--bg-morning);
+  }
+
+  .bg-afternoon {
+    background: var(--bg-afternoon);
+  }
+
+  .bg-evening {
+    background: var(--bg-evening);
+  }
+
+  /* Stats card backgrounds */
+  .bg-stat-today {
+    background: var(--bg-stat-today);
+  }
+
+  .bg-stat-week {
+    background: var(--bg-stat-week);
+  }
+
+  .bg-stat-alltime {
+    background: var(--bg-stat-alltime);
+  }
+
+  /* Habit color utility classes - include text color for contrast */
+  .habit-bg-1 {
+    background: var(--habit-color-1);
+    color: var(--habit-text-1);
+  }
+  .habit-bg-2 {
+    background: var(--habit-color-2);
+    color: var(--habit-text-2);
+  }
+  .habit-bg-3 {
+    background: var(--habit-color-3);
+    color: var(--habit-text-3);
+  }
+  .habit-bg-4 {
+    background: var(--habit-color-4);
+    color: var(--habit-text-4);
+  }
+  .habit-bg-5 {
+    background: var(--habit-color-5);
+    color: var(--habit-text-5);
+  }
+  .habit-bg-6 {
+    background: var(--habit-color-6);
+    color: var(--habit-text-6);
+  }
+  .habit-bg-7 {
+    background: var(--habit-color-7);
+    color: var(--habit-text-7);
+  }
+  .habit-bg-8 {
+    background: var(--habit-color-8);
+    color: var(--habit-text-8);
+  }
+
+  /* Habit text contrast via data-token attribute (for elements using inline background styles) */
+  [data-token="1"] {
+    color: var(--habit-text-1);
+  }
+  [data-token="2"] {
+    color: var(--habit-text-2);
+  }
+  [data-token="3"] {
+    color: var(--habit-text-3);
+  }
+  [data-token="4"] {
+    color: var(--habit-text-4);
+  }
+  [data-token="5"] {
+    color: var(--habit-text-5);
+  }
+  [data-token="6"] {
+    color: var(--habit-text-6);
+  }
+  [data-token="7"] {
+    color: var(--habit-text-7);
+  }
+  [data-token="8"] {
+    color: var(--habit-text-8);
   }
 }

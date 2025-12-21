@@ -68,6 +68,6 @@ class HabitsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def habit_params
-      params.expect(habit: [ :name, :description, :color, :active ])
+      params.expect(habit: [ :name, :description, :color_token, :active ])
     end
 end

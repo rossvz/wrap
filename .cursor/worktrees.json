@@ -1,0 +1,6 @@
+{
+  "setup-worktree": [
+    "bundle install",
+    "bin/rails db:prepare"
+  ]
+}

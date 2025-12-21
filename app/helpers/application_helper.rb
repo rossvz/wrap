@@ -1,4 +1,12 @@
 module ApplicationHelper
+  def theme_display_name(theme)
+    case theme
+    when "default" then "Bold & Colorful"
+    when "monochrome" then "Monochrome Magic"
+    else theme.titleize
+    end
+  end
+
   def format_duration(minutes)
     minutes = minutes.to_i
     hours = minutes / 60

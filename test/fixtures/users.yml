@@ -3,8 +3,9 @@
 one:
   email_address: user_one@example.com
   name: User One
+  theme: default
 
 two:
   email_address: user_two@example.com
   name: User Two
-
+  theme: monochrome

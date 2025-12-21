@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_21_210655) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_21_214543) do
   create_table "habit_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "end_hour", precision: 3, scale: 1
@@ -25,7 +25,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_21_210655) do
 
   create_table "habits", force: :cascade do |t|
     t.boolean "active", default: true, null: false
-    t.string "color", null: false
+    t.integer "color_token", default: 1, null: false
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
@@ -58,6 +58,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_21_210655) do
     t.datetime "created_at", null: false
     t.string "email_address", null: false
     t.string "name"
+    t.string "theme", default: "default", null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end

@@ -1,33 +1,50 @@
 class Habit < ApplicationRecord
-  COLORS = [
-    { hex: "#FDE047", class: "bg-yellow-300" },
-    { hex: "#BEF264", class: "bg-lime-300" },
-    { hex: "#FDA4AF", class: "bg-rose-300" },
-    { hex: "#F0ABFC", class: "bg-fuchsia-300" },
-    { hex: "#7DD3FC", class: "bg-sky-300" },
-    { hex: "#6EE7B7", class: "bg-emerald-300" },
-    { hex: "#FDBA74", class: "bg-orange-300" },
-    { hex: "#C4B5FD", class: "bg-violet-300" }
-  ].freeze
+  # Available color tokens (1-8)
+  COLOR_TOKENS = (1..8).to_a.freeze
 
   belongs_to :user, optional: true
   has_many :habit_logs, dependent: :destroy
 
   validates :name, presence: true
-  validates :color, presence: true
+  validates :color_token, presence: true, inclusion: { in: COLOR_TOKENS }
 
-  after_initialize :set_defaults, if: :new_record?
+  # Use before_validation so user association is set when we check for unused tokens
+  before_validation :set_defaults, on: :create
 
-  def self.random_unused_color
-    used_colors = pluck(:color).map(&:upcase)
-    available_colors = COLORS.map { |c| c[:hex] }.reject { |hex| used_colors.include?(hex.upcase) }
-    available_colors = COLORS.map { |c| c[:hex] } if available_colors.empty?
-    available_colors.sample
+  # Find next unused color token for a given scope (e.g., user's habits)
+  def self.next_unused_token(scope = all)
+    used_tokens = scope.pluck(:color_token)
+    available_tokens = COLOR_TOKENS - used_tokens
+    available_tokens = COLOR_TOKENS if available_tokens.empty?
+    # Return in order (1, 2, 3...) rather than random for predictability
+    available_tokens.min
   end
 
   def set_defaults
-    self.color ||= Habit.random_unused_color
     self.active = true if self.active.nil?
+    # Always assign next available color if not explicitly set via form
+    # We track this with an instance variable since DB default makes color_token non-nil
+    self.color_token = next_available_color_token unless @color_token_was_set
+  end
+
+  def color_token=(value)
+    @color_token_was_set = true
+    super
+  end
+
+  def next_available_color_token
+    scope = user ? user.habits : Habit.all
+    Habit.next_unused_token(scope)
+  end
+
+  # Returns CSS variable reference for use in style attributes
+  def color_css_var
+    "var(--habit-color-#{color_token})"
+  end
+
+  # Returns CSS class for habit background
+  def color_class
+    "habit-bg-#{color_token}"
   end
 
   def logs_for(date)

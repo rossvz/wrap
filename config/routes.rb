@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   root "dashboard#index"
   get "dashboard" => "dashboard#index"
 
+  # User settings
+  resource :settings, only: [ :show, :update ]
+
   # Authentication
   resource :session, only: [ :new, :create, :destroy ] do
     resource :magic_link, only: [ :show, :create ], module: :sessions

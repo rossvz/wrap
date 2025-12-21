@@ -23,23 +23,22 @@
 
   <div class="mt-4 grid gap-4 md:grid-cols-12" data-controller="color-picker">
     <div class="md:col-span-6">
-      <%= form.label :color, "Card color", class: "nb-label" %>
-      <%= form.hidden_field :color, data: { color_picker_target: "input" } %>
+      <%= form.label :color_token, "Card color", class: "nb-label" %>
+      <%= form.hidden_field :color_token, data: { color_picker_target: "input" } %>
       
       <div class="mt-2 flex flex-wrap gap-2">
-        <% Habit::COLORS.each do |color| %>
-          <% hex, bg_class = color[:hex], color[:class] %>
+        <% Habit::COLOR_TOKENS.each do |token| %>
           <button type="button"
-                  class="h-10 w-10 border-2 border-black <%= bg_class %> transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+                  class="h-10 w-10 border-2 border-black habit-bg-<%= token %> transition-transform hover:scale-110 active:scale-95 cursor-pointer"
                   style="box-shadow: 2px 2px 0 #000;"
-                  data-color="<%= hex %>"
+                  data-token="<%= token %>"
                   data-color-picker-target="colorButton"
                   data-action="click->color-picker#select"
-                  title="<%= hex %>">
+                  title="Color <%= token %>">
           </button>
         <% end %>
       </div>
-      <p class="mt-2 text-xs text-black/70 italic">Pick a bold color for your habit card.</p>
+      <p class="mt-2 text-xs text-black/70 italic">Pick a color for your habit card. Colors adapt to your theme.</p>
     </div>
 
     <div class="md:col-span-6 flex items-end">

@@ -19,7 +19,7 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create habit" do
     assert_difference("Habit.count") do
-      post habits_url, params: { habit: { active: @habit.active, color: @habit.color, description: @habit.description, name: @habit.name } }
+      post habits_url, params: { habit: { active: @habit.active, color_token: @habit.color_token, description: @habit.description, name: @habit.name } }
     end
 
     assert_redirected_to habit_url(Habit.last)
@@ -36,7 +36,7 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update habit" do
-    patch habit_url(@habit), params: { habit: { active: @habit.active, color: @habit.color, description: @habit.description, name: @habit.name } }
+    patch habit_url(@habit), params: { habit: { active: @habit.active, color_token: @habit.color_token, description: @habit.description, name: @habit.name } }
     assert_redirected_to habit_url(@habit)
   end
 
@@ -56,7 +56,7 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not access other users habits" do
     other_user = users(:two)
-    other_habit = other_user.habits.create!(name: "Other Habit", color: "#FDE047")
+    other_habit = other_user.habits.create!(name: "Other Habit", color_token: 1)
 
     # The controller scopes to current_user.habits.find() so this should 404
     get habit_url(other_habit)

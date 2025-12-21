@@ -4,12 +4,12 @@ one:
   user: one
   name: Reading
   description: Daily reading habit
-  color: "#FDE047"
+  color_token: 1
   active: true
 
 two:
   user: one
   name: Exercise
   description: Daily exercise
-  color: "#BEF264"
+  color_token: 2
   active: true

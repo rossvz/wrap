@@ -1,17 +1,16 @@
-<div id="<%= dom_id habit %>" class="nb-card nb-card--tight" style="background: <%= habit.color %>">
+<div id="<%= dom_id habit %>" class="nb-card nb-card--tight habit-card" style="background: <%= habit.color_css_var %>" data-token="<%= habit.color_token %>">
   <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
     <div class="min-w-0">
       <p class="text-xl font-black truncate"><%= habit.name %></p>
       <% if habit.description.present? %>
-        <p class="mt-1 text-sm text-black/70"><%= habit.description %></p>
+        <p class="mt-1 text-sm opacity-70"><%= habit.description %></p>
       <% end %>
-      <div class="mt-3 flex flex-wrap items-center gap-2">
+      <div class="mt-3">
         <% if habit.active? %>
           <span class="nb-pill nb-pill--white">Active</span>
         <% else %>
           <span class="nb-pill nb-pill--white">Paused</span>
         <% end %>
-        <span class="nb-pill nb-pill--white">Color: <%= habit.color %></span>
       </div>
     </div>
   </div>

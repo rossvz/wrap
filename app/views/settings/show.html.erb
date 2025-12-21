@@ -1,0 +1,88 @@
+<% content_for :title, "Settings" %>
+
+<div class="nb-page">
+  <div class="nb-page-header">
+    <div>
+      <p class="text-xs font-black uppercase tracking-widest">Settings</p>
+      <h1 class="mt-1 text-5xl font-black leading-tight">Preferences</h1>
+      <p class="mt-2 text-sm text-black/70">Customize your Habit Tracker experience.</p>
+    </div>
+    <%= link_to "Dashboard", dashboard_path, class: "nb-btn nb-btn--white" %>
+  </div>
+
+  <div class="nb-card" data-controller="theme">
+    <%= form_with(model: current_user, url: settings_path, method: :patch, class: "grid gap-6", data: { action: "submit->theme#save" }) do |form| %>
+      <div>
+        <h2 class="text-2xl font-black">Appearance</h2>
+        <p class="mt-1 text-sm text-black/70">Choose how Habit Tracker looks for you.</p>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <%= form.label :theme, "Color Theme", class: "nb-label" %>
+          <%= form.select :theme, 
+              User::THEMES.map { |t| [theme_display_name(t), t] },
+              {},
+              class: "nb-input mt-2",
+              data: { theme_target: "select", action: "change->theme#preview" } %>
+          <p class="mt-2 text-xs text-black/70">Preview updates instantly. Save to keep your choice.</p>
+        </div>
+
+        <!-- Theme Preview -->
+        <div>
+          <p class="nb-label">Preview</p>
+          <div class="mt-2 grid grid-cols-4 gap-2">
+            <% (1..8).each do |token| %>
+              <div class="h-10 border-2 border-black habit-bg-<%= token %>" 
+                   style="box-shadow: 2px 2px 0 #000;"
+                   title="Color <%= token %>"></div>
+            <% end %>
+          </div>
+          <p class="mt-2 text-xs text-black/70">These are your habit colors in the current theme.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <%= form.submit "Save settings", class: "nb-btn nb-btn--yellow" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Theme Comparison -->
+  <div class="nb-card">
+    <h2 class="text-2xl font-black">Theme Comparison</h2>
+    <p class="mt-1 text-sm text-black/70 mb-6">See how your habits will look in each theme.</p>
+
+    <div class="grid gap-6 md:grid-cols-2">
+      <!-- Default Theme Preview -->
+      <div>
+        <p class="nb-label mb-3">Bold & Colorful (Default)</p>
+        <div class="grid grid-cols-4 gap-2">
+          <div class="h-10 border-2 border-black" style="background: #FDE047; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #BEF264; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #FDA4AF; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #F0ABFC; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #7DD3FC; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #6EE7B7; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #FDBA74; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #C4B5FD; box-shadow: 2px 2px 0 #000;"></div>
+        </div>
+      </div>
+
+      <!-- Monochrome Theme Preview -->
+      <div>
+        <p class="nb-label mb-3">Monochrome Magic</p>
+        <div class="grid grid-cols-4 gap-2">
+          <div class="h-10 border-2 border-black" style="background: #1f2937; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #374151; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #4b5563; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #6b7280; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #9ca3af; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #d1d5db; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #e5e7eb; box-shadow: 2px 2px 0 #000;"></div>
+          <div class="h-10 border-2 border-black" style="background: #f3f4f6; box-shadow: 2px 2px 0 #000;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

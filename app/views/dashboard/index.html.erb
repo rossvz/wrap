@@ -23,9 +23,9 @@
          data-action="mousedown->time-block#startDrag touchstart->time-block#startTouchDrag">
 
       <% sections = {
-        6 => { name: "Your Morning", bg: "bg-amber-50" },
-        12 => { name: "Your Afternoon", bg: "bg-sky-50" },
-        18 => { name: "Your Evening", bg: "bg-indigo-50" }
+        6 => { name: "Your Morning", bg: "bg-morning" },
+        12 => { name: "Your Afternoon", bg: "bg-afternoon" },
+        18 => { name: "Your Evening", bg: "bg-evening" }
       } %>
 
       <!-- All hour rows in one continuous grid -->
@@ -50,8 +50,9 @@
             <!-- Existing time blocks for this hour -->
             <% @time_blocks.select { |b| b.start_hour.to_i == hour }.each do |block| %>
               <% block_height = (block.end_hour - block.start_hour) * 60 %>
-              <div class="absolute inset-x-1 z-10 rounded-lg border-2 border-black cursor-pointer transition-transform hover:scale-[1.02]"
-                   style="top: 0; height: <%= block_height %>px; background-color: <%= block.habit.color %>;"
+              <div class="absolute inset-x-1 z-10 rounded-lg border-2 border-black cursor-pointer transition-transform hover:scale-[1.02] habit-card"
+                   style="top: 0; height: <%= block_height %>px; background: <%= block.habit.color_css_var %>;"
+                   data-token="<%= block.habit.color_token %>"
                    data-time-block
                    data-action="click->time-block#deleteBlock"
                    data-block-id="<%= block.id %>"
@@ -59,10 +60,10 @@
                 <div class="p-2 h-full flex flex-col">
                   <p class="font-black text-sm truncate"><%= block.habit.name %></p>
                   <% if block.duration_hours >= 2 %>
-                    <p class="text-xs text-black/70 mt-1"><%= block.time_range_display %></p>
+                    <p class="text-xs opacity-70 mt-1"><%= block.time_range_display %></p>
                   <% end %>
                   <% if block.notes.present? && block.duration_hours >= 2 %>
-                    <p class="text-xs text-black/50 mt-auto truncate"><%= block.notes %></p>
+                    <p class="text-xs opacity-50 mt-auto truncate"><%= block.notes %></p>
                   <% end %>
                 </div>
               </div>
@@ -73,8 +74,8 @@
 
       <!-- Drag selection overlay - INSIDE the scrollable container -->
       <div data-time-block-target="selection"
-           class="hidden absolute left-12 right-1 bg-fuchsia-300/50 border-2 border-dashed border-fuchsia-500 rounded-lg z-20 pointer-events-none"
-           style="top: 0; height: 60px;">
+           class="hidden absolute left-12 right-1 border-2 border-dashed rounded-lg z-20 pointer-events-none"
+           style="top: 0; height: 60px; background: var(--accent-primary); opacity: 0.5; border-color: var(--accent-primary);">
       </div>
     </div>
 
@@ -91,15 +92,15 @@
 
   <!-- Stats row -->
   <div class="grid gap-4 md:grid-cols-3">
-    <div class="nb-card nb-card--tight" style="background: #a7f3d0">
+    <div class="nb-card nb-card--tight bg-stat-today">
       <p class="text-xs font-black uppercase tracking-widest">Today</p>
       <p class="mt-2 text-2xl font-black"><%= format_hours(@totals[:today]) %></p>
     </div>
-    <div class="nb-card nb-card--tight" style="background: #bfdbfe">
+    <div class="nb-card nb-card--tight bg-stat-week">
       <p class="text-xs font-black uppercase tracking-widest">This week</p>
       <p class="mt-2 text-2xl font-black"><%= format_hours(@totals[:week]) %></p>
     </div>
-    <div class="nb-card nb-card--tight" style="background: #fde68a">
+    <div class="nb-card nb-card--tight bg-stat-alltime">
       <p class="text-xs font-black uppercase tracking-widest">All-time</p>
       <p class="mt-2 text-2xl font-black"><%= format_hours(@totals[:all_time]) %></p>
     </div>
@@ -132,12 +133,13 @@
         <div class="grid gap-2 mb-6">
           <% @habits.each do |habit| %>
             <button type="button"
-                    class="nb-btn text-left justify-start"
-                    style="background-color: <%= habit.color %>;"
+                    class="nb-btn text-left justify-start habit-card"
+                    style="background: <%= habit.color_css_var %>;"
+                    data-token="<%= habit.color_token %>"
                     data-action="click->time-block#selectHabit"
                     data-habit-id="<%= habit.id %>">
               <span class="inline-block w-3 h-3 border-2 border-black rounded-full mr-2"
-                    style="background-color: <%= habit.color %>;"></span>
+                    style="background: <%= habit.color_css_var %>;"></span>
               <%= habit.name %>
             </button>
           <% end %>
