@@ -10,6 +10,7 @@ class Habit < ApplicationRecord
     { hex: "#C4B5FD", class: "bg-violet-300" }
   ].freeze
 
+  belongs_to :user, optional: true
   has_many :habit_logs, dependent: :destroy
 
   validates :name, presence: true

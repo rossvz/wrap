@@ -1,7 +1,7 @@
 class DashboardController < ApplicationController
   def index
     @date = Date.current
-    @habits = Habit.where(active: true).order(created_at: :asc)
+    @habits = current_user.habits.where(active: true).order(created_at: :asc)
 
     # Load all time blocks for today
     @time_blocks = HabitLog.includes(:habit)

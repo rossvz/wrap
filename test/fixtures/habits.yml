@@ -1,13 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  description: MyText
-  color: MyString
-  active: false
+  user: one
+  name: Reading
+  description: Daily reading habit
+  color: "#FDE047"
+  active: true
 
 two:
-  name: MyString
-  description: MyText
-  color: MyString
-  active: false
+  user: one
+  name: Exercise
+  description: Daily exercise
+  color: "#BEF264"
+  active: true

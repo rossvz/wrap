@@ -2,7 +2,9 @@ require "test_helper"
 
 class HabitsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @user = users(:one)
     @habit = habits(:one)
+    sign_in_as(@user)
   end
 
   test "should get index" do
@@ -44,5 +46,20 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to habits_url
+  end
+
+  test "should redirect to login when not authenticated" do
+    sign_out
+    get habits_url
+    assert_redirected_to new_session_url
+  end
+
+  test "should not access other users habits" do
+    other_user = users(:two)
+    other_habit = other_user.habits.create!(name: "Other Habit", color: "#FDE047")
+
+    # The controller scopes to current_user.habits.find() so this should 404
+    get habit_url(other_habit)
+    assert_response :not_found
   end
 end

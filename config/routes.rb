@@ -2,6 +2,11 @@ Rails.application.routes.draw do
   root "dashboard#index"
   get "dashboard" => "dashboard#index"
 
+  # Authentication
+  resource :session, only: [:new, :create, :destroy] do
+    resource :magic_link, only: [:show, :create], module: :sessions
+  end
+
   # Standalone route for creating habit logs from the timeline
   resources :habit_logs, only: [:create]
 
