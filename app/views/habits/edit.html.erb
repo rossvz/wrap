@@ -1,0 +1,19 @@
+<% content_for :title, "Editing habit" %>
+
+<div class="nb-page">
+  <div class="nb-page-header">
+    <div>
+      <p class="text-xs font-black uppercase tracking-widest">Habits</p>
+      <h1 class="mt-1 text-5xl font-black leading-tight">Edit habit</h1>
+      <p class="mt-2 text-sm text-black/70">Tune the name, color, and whether it appears on the dashboard.</p>
+    </div>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <%= link_to "Open", habit_path(@habit), class: "nb-btn nb-btn--white" %>
+      <%= link_to "All habits", habits_path, class: "nb-btn nb-btn--white" %>
+    </div>
+  </div>
+
+  <div class="nb-card">
+    <%= render "form", habit: @habit %>
+  </div>
+</div>

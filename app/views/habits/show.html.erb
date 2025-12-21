@@ -1,0 +1,22 @@
+<% content_for :title, "Showing habit" %>
+
+<div class="nb-page">
+  <div class="nb-page-header">
+    <div>
+      <p class="text-xs font-black uppercase tracking-widest">Habit</p>
+      <h1 class="mt-1 text-5xl font-black leading-tight"><%= @habit.name %></h1>
+      <p class="mt-2 text-sm text-black/70">Log minutes. Watch the totals grow.</p>
+    </div>
+
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <%= link_to "All habits", habits_path, class: "nb-btn nb-btn--white" %>
+      <%= link_to "Edit", edit_habit_path(@habit), class: "nb-btn nb-btn--white" %>
+      <%= button_to "Delete", habit_path(@habit), method: :delete, class: "nb-btn nb-btn--red", data: { turbo_confirm: "Delete this habit?" } %>
+    </div>
+  </div>
+
+  <%= render @habit %>
+
+  <%= render "habit_logs/form", habit: @habit, habit_log: @today_log %>
+  <%= render "habit_logs/list", habit: @habit, habit_logs: @recent_logs %>
+</div>

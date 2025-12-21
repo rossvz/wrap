@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+/* Neobrutalist-ish design tokens + components (Tailwind v4 CSS-first) */
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    background: #fff7ed;
+    color: #000;
+  }
+
+  a {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+}
+
+@layer components {
+  .nb-container {
+    @apply mx-auto max-w-5xl px-6 py-10;
+  }
+
+  .nb-nav {
+    @apply border-b-2 border-black bg-white;
+  }
+
+  .nb-logo {
+    @apply grid h-12 w-12 place-items-center border-2 border-black bg-fuchsia-300 text-lg font-black;
+    box-shadow: 4px 4px 0 #000;
+  }
+
+  .nb-page {
+    @apply grid gap-6;
+  }
+
+  .nb-page-header {
+    @apply flex flex-col gap-4 border-2 border-black bg-white p-6 sm:flex-row sm:items-end sm:justify-between;
+    box-shadow: 8px 8px 0 #000;
+  }
+
+  .nb-card {
+    @apply border-2 border-black bg-white p-6;
+    box-shadow: 8px 8px 0 #000;
+  }
+
+  .nb-card--tight {
+    @apply p-4;
+    box-shadow: 6px 6px 0 #000;
+  }
+
+  .nb-card--notice {
+    @apply bg-lime-200;
+  }
+
+  .nb-card--alert {
+    @apply bg-rose-200;
+  }
+
+  .nb-label {
+    @apply text-xs font-black uppercase tracking-widest;
+  }
+
+  .nb-input {
+    @apply w-full border-2 border-black bg-white px-3 py-2 font-medium outline-none;
+    box-shadow: 3px 3px 0 #000;
+  }
+
+  .nb-input:focus {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 #000;
+  }
+
+  .nb-pill {
+    @apply inline-flex items-center gap-2 border-2 border-black px-2 py-1 text-xs font-black;
+    box-shadow: 3px 3px 0 #000;
+  }
+
+  .nb-pill--white {
+    @apply bg-white;
+  }
+
+  .nb-btn {
+    @apply inline-flex items-center justify-center gap-2 border-2 border-black px-4 py-2 text-sm font-black transition;
+    box-shadow: 4px 4px 0 #000;
+  }
+
+  .nb-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 #000;
+  }
+
+  .nb-btn--yellow {
+    @apply bg-yellow-300;
+  }
+
+  .nb-btn--white {
+    @apply bg-white;
+  }
+
+  .nb-btn--red {
+    @apply bg-rose-300;
+  }
+}

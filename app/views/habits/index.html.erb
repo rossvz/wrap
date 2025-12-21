@@ -1,0 +1,35 @@
+<% content_for :title, "Habits" %>
+
+<div class="nb-page">
+  <div class="nb-page-header">
+    <div>
+      <p class="text-xs font-black uppercase tracking-widest">Habits</p>
+      <h1 class="mt-1 text-5xl font-black leading-tight">Your lineup</h1>
+      <p class="mt-2 text-sm text-black/70">Create, pause, and track minutes day-by-day.</p>
+    </div>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <%= link_to "Dashboard", dashboard_path, class: "nb-btn nb-btn--white" %>
+      <%= link_to "New habit", new_habit_path, class: "nb-btn nb-btn--yellow" %>
+    </div>
+  </div>
+
+  <div id="habits" class="grid gap-4">
+    <% if @habits.any? %>
+      <% @habits.each do |habit| %>
+        <div class="grid gap-2">
+          <%= render habit %>
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <%= link_to "Open", habit_path(habit), class: "nb-btn nb-btn--white" %>
+            <%= link_to "Edit", edit_habit_path(habit), class: "nb-btn nb-btn--white" %>
+            <%= button_to "Delete", habit_path(habit), method: :delete, class: "nb-btn nb-btn--red", data: { turbo_confirm: "Delete this habit?" } %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="nb-card">
+        <p class="font-black">No habits yet.</p>
+        <p class="mt-1 text-sm text-black/70">Hit “New habit” and start tracking minutes.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
