@@ -73,4 +73,3 @@ class HabitLogsController < ApplicationController
       ]
     end
 end
-
