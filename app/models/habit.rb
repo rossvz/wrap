@@ -4,6 +4,13 @@ class Habit < ApplicationRecord
   validates :name, presence: true
   validates :color, presence: true
 
+  after_initialize :set_defaults, if: :new_record?
+
+  def set_defaults
+    self.color ||= "#FDE047"
+    self.active = true if self.active.nil?
+  end
+
   def log_for(date)
     habit_logs.find_by(logged_on: date)
   end
