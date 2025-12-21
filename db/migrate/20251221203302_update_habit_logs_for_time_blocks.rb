@@ -5,10 +5,10 @@ class UpdateHabitLogsForTimeBlocks < ActiveRecord::Migration[8.1]
     add_column :habit_logs, :end_hour, :decimal, precision: 3, scale: 1
 
     # Remove old unique constraint - we now allow multiple logs per habit per day
-    remove_index :habit_logs, [:habit_id, :logged_on], unique: true
+    remove_index :habit_logs, [ :habit_id, :logged_on ], unique: true
 
     # Add a regular (non-unique) index for querying
-    add_index :habit_logs, [:habit_id, :logged_on]
+    add_index :habit_logs, [ :habit_id, :logged_on ]
 
     # Remove the old duration_minutes column
     remove_column :habit_logs, :duration_minutes, :integer

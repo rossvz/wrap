@@ -76,4 +76,3 @@ module Authentication
     cookies.delete(:pending_auth_email)
   end
 end
-

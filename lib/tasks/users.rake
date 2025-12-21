@@ -1,6 +1,6 @@
 namespace :users do
   desc "Assign all orphan habits to a user (creates user if email provided)"
-  task :adopt_habits, [:email] => :environment do |t, args|
+  task :adopt_habits, [ :email ] => :environment do |t, args|
     email = args[:email]
 
     if email.blank?
@@ -45,4 +45,3 @@ namespace :users do
     puts "Deleted #{count} stale magic link(s)."
   end
 end
-

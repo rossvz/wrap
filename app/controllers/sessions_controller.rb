@@ -1,6 +1,6 @@
 class SessionsController < ApplicationController
   allow_unauthenticated_access
-  before_action :redirect_authenticated_user, only: [:new, :create]
+  before_action :redirect_authenticated_user, only: [ :new, :create ]
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { redirect_to new_session_path, alert: "Too many login attempts. Please try again later." }
 
   layout "public"
@@ -32,4 +32,3 @@ class SessionsController < ApplicationController
     redirect_to root_path if authenticated?
   end
 end
-

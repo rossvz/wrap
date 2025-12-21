@@ -47,4 +47,3 @@ class MagicLink < ApplicationRecord
     self.expires_at ||= EXPIRATION_TIME.from_now
   end
 end
-

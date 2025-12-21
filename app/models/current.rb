@@ -6,4 +6,3 @@ class Current < ActiveSupport::CurrentAttributes
     self.user = session&.user
   end
 end
-

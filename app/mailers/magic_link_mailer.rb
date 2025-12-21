@@ -9,4 +9,3 @@ class MagicLinkMailer < ApplicationMailer
     )
   end
 end
-

@@ -39,4 +39,3 @@ class Sessions::MagicLinksController < ApplicationController
     redirect_to after_authentication_url, notice: "Welcome back!"
   end
 end
-
