@@ -228,21 +228,59 @@
   .timeline-hour {
     user-select: none;
     -webkit-user-select: none;
-    touch-action: none;
     transition: background-color 0.1s ease;
+    /* Allow scrolling on mobile - don't set touch-action: none here */
   }
 
-  .timeline-hour:hover .hour-slot {
-    background-color: rgba(0, 0, 0, 0.04);
+  /* Desktop: draggable main area */
+  @media (min-width: 768px) {
+    .timeline-hour .hour-content {
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .timeline-hour:hover .hour-content {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .timeline-hour:hover .hour-content::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border: 2px dashed rgba(0, 0, 0, 0.15);
+      border-radius: 0.5rem;
+      pointer-events: none;
+    }
   }
 
-  .timeline-hour:hover .hour-slot::after {
-    content: "";
-    position: absolute;
-    inset: 2px;
-    border: 2px dashed rgba(0, 0, 0, 0.15);
-    border-radius: 0.5rem;
-    pointer-events: none;
+  /* Drag handle - the dedicated touch zone for mobile */
+  .drag-handle {
+    touch-action: none;
+    -webkit-touch-callout: none;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      rgba(0, 0, 0, 0.03) 4px,
+      rgba(0, 0, 0, 0.03) 8px
+    );
+    transition: background-color 0.15s ease;
+  }
+
+  .drag-handle:hover,
+  .drag-handle:active {
+    background-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .drag-handle:active span {
+    transform: scale(1.2);
+  }
+
+  /* Hide drag handle on desktop since whole row is draggable */
+  @media (min-width: 768px) {
+    .drag-handle {
+      display: none;
+    }
   }
 
   /* Time-of-day backgrounds */

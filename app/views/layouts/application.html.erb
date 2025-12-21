@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html data-theme="<%= current_user&.theme || 'default' %>">
   <head>
-    <title><%= content_for(:title) || "Habit Tracker" %></title>
+    <title><%= content_for(:title) || "Wrap" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Habit Tracker">
+    <meta name="application-name" content="Wrap">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -28,9 +28,9 @@
       <div class="nb-container">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div class="flex items-center gap-3">
-            <div class="nb-logo">HT</div>
+            <img src="/icon.png" alt="Wrap" class="w-12 h-12 rounded-lg shadow-sm">
             <div>
-              <p class="text-xs font-black uppercase tracking-widest">Habit Tracker</p>
+              <p class="text-xs font-black uppercase tracking-widest">Wrap</p>
               <p class="text-sm text-black/70">Durations > checkmarks.</p>
             </div>
           </div>

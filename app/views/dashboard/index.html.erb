@@ -19,8 +19,16 @@
 
   <!-- Timeline Calendar -->
   <div class="nb-card relative overflow-hidden p-0">
-    <div class="timeline-container max-h-[70vh] overflow-y-auto relative" data-time-block-target="timeline"
-         data-action="mousedown->time-block#startDrag touchstart->time-block#startTouchDrag">
+    <!-- Mobile drag hint -->
+    <div class="md:hidden flex items-center justify-between border-b-2 border-black bg-white px-3 py-2">
+      <span class="text-xs font-bold text-black/70">Scroll timeline below</span>
+      <span class="text-xs font-bold text-black flex items-center gap-1">
+        <span class="inline-block w-3 h-3 rounded bg-black/10 border border-dashed border-black/40"></span>
+        Drag ＋ to add
+      </span>
+    </div>
+
+    <div class="timeline-container max-h-[70vh] overflow-y-auto relative" data-time-block-target="timeline">
 
       <% sections = {
         6 => { name: "Your Morning", bg: "bg-morning" },
@@ -35,7 +43,7 @@
         
         <% if section %>
           <!-- Section header row -->
-          <div class="sticky top-0 z-30 border-b-2 border-black bg-white/95 backdrop-blur px-4 py-2 pointer-events-none">
+          <div class="sticky top-0 z-30 border-b-2 border-black bg-white/95 backdrop-blur px-4 py-2">
             <p class="text-sm font-black uppercase tracking-widest"><%= section[:name] %></p>
           </div>
         <% end %>
@@ -43,10 +51,14 @@
         <div class="timeline-hour flex border-b border-black/10 <%= section_bg %> relative" 
              style="height: 60px;"
              data-hour="<%= hour %>">
-          <div class="w-12 shrink-0 border-r border-black/10 bg-white/50 px-2 py-1 pointer-events-none">
+          <!-- Time label - scrollable area -->
+          <div class="w-12 shrink-0 border-r border-black/10 bg-white/50 px-2 py-1">
             <span class="text-xs font-bold text-black/50"><%= format_hour(hour) %></span>
           </div>
-          <div class="flex-1 relative hour-slot" data-hour="<%= hour %>">
+          
+          <!-- Main content area - scrollable on mobile, draggable on desktop -->
+          <div class="flex-1 relative hour-content" data-hour="<%= hour %>"
+               data-action="mousedown->time-block#startDrag">
             <!-- Existing time blocks for this hour -->
             <% @time_blocks.select { |b| b.start_hour.to_i == hour }.each do |block| %>
               <% block_height = (block.end_hour - block.start_hour) * 60 %>
@@ -69,12 +81,19 @@
               </div>
             <% end %>
           </div>
+
+          <!-- Drag handle zone - for mobile touch dragging -->
+          <div class="drag-handle w-12 shrink-0 border-l border-dashed border-black/20 flex items-center justify-center cursor-pointer"
+               data-hour="<%= hour %>"
+               data-action="touchstart->time-block#startTouchDrag mousedown->time-block#startDrag">
+            <span class="text-lg font-black text-black/30 select-none">＋</span>
+          </div>
         </div>
       <% end %>
 
       <!-- Drag selection overlay - INSIDE the scrollable container -->
       <div data-time-block-target="selection"
-           class="hidden absolute left-12 right-1 border-2 border-dashed rounded-lg z-20 pointer-events-none"
+           class="hidden absolute left-12 right-12 md:right-1 border-2 border-dashed rounded-lg z-20 pointer-events-none"
            style="top: 0; height: 60px; background: var(--accent-primary); opacity: 0.5; border-color: var(--accent-primary);">
       </div>
     </div>
@@ -83,7 +102,8 @@
     <% if @time_blocks.empty? %>
       <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div class="nb-card nb-card--tight bg-white/95 text-center max-w-xs">
-          <p class="text-lg font-black">Tap & drag to log time</p>
+          <p class="text-lg font-black hidden md:block">Drag to log time</p>
+          <p class="text-lg font-black md:hidden">Drag ＋ to log time</p>
           <p class="text-sm text-black/70 mt-1">Select a time range, then choose a habit</p>
         </div>
       </div>

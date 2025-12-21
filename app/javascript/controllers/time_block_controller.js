@@ -75,13 +75,29 @@ export default class extends Controller {
     return this.startHourValue;
   }
 
-  // Mouse events
+  // Get starting hour from the element that was clicked/touched
+  getHourFromElement(element) {
+    // Look for data-hour on the element or its parents
+    const hourElement = element.closest("[data-hour]");
+    if (hourElement) {
+      const hour = parseInt(hourElement.dataset.hour, 10);
+      if (!isNaN(hour)) {
+        return hour;
+      }
+    }
+    return null;
+  }
+
+  // Mouse events (desktop - works on hour-content area)
   startDrag(event) {
     if (event.target.closest("[data-time-block]")) return;
 
     event.preventDefault();
     this.isDragging = true;
-    this.dragStartHour = this.getHourFromY(event.clientY);
+    
+    // Try to get hour from element first, fall back to Y position
+    const hourFromElement = this.getHourFromElement(event.target);
+    this.dragStartHour = hourFromElement !== null ? hourFromElement : this.getHourFromY(event.clientY);
     this.selectedStartHour = this.dragStartHour;
     this.selectedEndHour = this.dragStartHour + 1;
 
@@ -128,13 +144,23 @@ export default class extends Controller {
     this.openModal();
   }
 
-  // Touch events
+  // Touch events (mobile - only triggered from drag-handle)
   startTouchDrag(event) {
     if (event.target.closest("[data-time-block]")) return;
 
+    // Only start drag if touching a drag handle
+    const dragHandle = event.target.closest(".drag-handle");
+    if (!dragHandle) return;
+
+    // Prevent default to stop scroll when dragging from handle
+    event.preventDefault();
+
     const touch = event.touches[0];
     this.isDragging = true;
-    this.dragStartHour = this.getHourFromY(touch.clientY);
+    
+    // Get the starting hour from the drag handle's data attribute
+    const hourFromElement = this.getHourFromElement(dragHandle);
+    this.dragStartHour = hourFromElement !== null ? hourFromElement : this.getHourFromY(touch.clientY);
     this.selectedStartHour = this.dragStartHour;
     this.selectedEndHour = this.dragStartHour + 1;
 
