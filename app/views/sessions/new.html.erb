@@ -1,0 +1,27 @@
+<% content_for(:title, "Sign in - Wrap") %>
+
+<h2 class="mb-1 text-xl font-black">Sign in</h2>
+<p class="mb-6 text-sm text-black/70">Enter your email and we'll send you a code.</p>
+
+<%= form_with url: session_path, method: :post, class: "space-y-5" do |form| %>
+  <div>
+    <label for="email_address" class="nb-label mb-2 block">
+      Email address
+    </label>
+    <%= form.email_field :email_address,
+        required: true,
+        autofocus: true,
+        autocomplete: "email",
+        placeholder: "you@example.com",
+        class: "nb-input" %>
+  </div>
+
+  <div>
+    <%= form.submit "Send sign-in code",
+        class: "nb-btn nb-btn--yellow w-full cursor-pointer" %>
+  </div>
+<% end %>
+
+<p class="mt-6 text-center text-xs font-bold text-black/50">
+  No password needed. We'll email you a one-time code.
+</p>

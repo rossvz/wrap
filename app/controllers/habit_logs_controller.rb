@@ -61,7 +61,7 @@ class HabitLogsController < ApplicationController
   private
 
   def set_habit
-    @habit = Habit.find(params.expect(:habit_id))
+    @habit = current_user.habits.find(params.expect(:habit_id))
   end
 
   def set_habit_log
@@ -75,18 +75,18 @@ class HabitLogsController < ApplicationController
   def find_or_create_habit
     # If habit_id is provided directly in params (from nested route or form)
     if params[:habit_id].present?
-      return Habit.find_by(id: params[:habit_id])
+      return current_user.habits.find_by(id: params[:habit_id])
     end
 
     # If habit_id is in habit_log params
     if params[:habit_log][:habit_id].present?
-      return Habit.find_by(id: params[:habit_log][:habit_id])
+      return current_user.habits.find_by(id: params[:habit_log][:habit_id])
     end
 
     # If new_habit_name is provided, create a new habit
     if params[:habit_log][:new_habit_name].present?
       name = params[:habit_log][:new_habit_name].strip
-      return Habit.create(name: name)
+      return current_user.habits.create(name: name)
     end
 
     nil

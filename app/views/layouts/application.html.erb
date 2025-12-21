@@ -39,6 +39,9 @@
             <%= link_to "Dashboard", dashboard_path, class: "nb-btn nb-btn--white" %>
             <%= link_to "Habits", habits_path, class: "nb-btn nb-btn--white" %>
             <%= link_to "New habit", new_habit_path, class: "nb-btn nb-btn--yellow" %>
+            <% if authenticated? %>
+              <%= button_to "Sign out", session_path, method: :delete, class: "nb-btn nb-btn--white text-gray-600" %>
+            <% end %>
           </nav>
         </div>
       </div>

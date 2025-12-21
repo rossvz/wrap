@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Sign in - Wrap" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Wrap">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-screen">
+    <main class="flex min-h-screen flex-col items-center justify-center px-4 py-12">
+      <div class="w-full max-w-md">
+        <div class="mb-8 flex items-center justify-center gap-4">
+          <div class="nb-logo text-2xl">W</div>
+          <div>
+            <p class="text-xs font-black uppercase tracking-widest">Wrap</p>
+            <p class="text-sm text-black/70">Track your habits with intention</p>
+          </div>
+        </div>
+
+        <% if flash[:notice] %>
+          <div class="nb-card nb-card--tight nb-card--notice mb-6">
+            <p class="text-sm font-bold"><%= flash[:notice] %></p>
+          </div>
+        <% end %>
+
+        <% if flash[:alert] %>
+          <div class="nb-card nb-card--tight nb-card--alert mb-6">
+            <p class="text-sm font-bold"><%= flash[:alert] %></p>
+          </div>
+        <% end %>
+
+        <div class="nb-card">
+          <%= yield %>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

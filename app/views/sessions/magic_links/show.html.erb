@@ -1,0 +1,31 @@
+<% content_for(:title, "Enter code - Wrap") %>
+
+<h2 class="mb-1 text-xl font-black">Check your email</h2>
+<p class="mb-6 text-sm text-black/70">
+  We sent a 6-character code to <strong class="font-black text-black"><%= pending_authentication_email %></strong>
+</p>
+
+<%= form_with url: session_magic_link_path, method: :post, class: "space-y-5" do |form| %>
+  <div>
+    <label for="code" class="nb-label mb-2 block">
+      Sign-in code
+    </label>
+    <%= form.text_field :code,
+        required: true,
+        autofocus: true,
+        autocomplete: "one-time-code",
+        maxlength: 6,
+        placeholder: "ABC123",
+        class: "nb-input text-center text-2xl font-black tracking-[0.3em] uppercase" %>
+  </div>
+
+  <div>
+    <%= form.submit "Sign in",
+        class: "nb-btn nb-btn--yellow w-full cursor-pointer" %>
+  </div>
+<% end %>
+
+<div class="mt-6 flex items-center justify-center gap-2 text-sm">
+  <span class="text-black/50 font-bold">Didn't receive it?</span>
+  <%= link_to "Try again", new_session_path, class: "nb-btn nb-btn--white text-xs py-1 px-3 no-underline" %>
+</div>
