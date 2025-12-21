@@ -136,9 +136,14 @@
   }
 
   .nb-page-header {
-    @apply flex flex-col gap-4 border-2 border-black p-6 sm:flex-row sm:items-end sm:justify-between;
+    @apply flex flex-col gap-3 border-2 border-black py-2 px-4 md:p-6 md:gap-4 sm:flex-row sm:items-end sm:justify-between;
     background: var(--bg-card);
-    box-shadow: 8px 8px 0 #000;
+    box-shadow: 4px 4px 0 #000;
+  }
+  @screen md {
+    .nb-page-header {
+      box-shadow: 8px 8px 0 #000;
+    }
   }
 
   .nb-card {

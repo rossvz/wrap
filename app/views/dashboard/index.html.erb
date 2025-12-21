@@ -4,16 +4,13 @@
   <div class="nb-page-header">
     <div>
       <p class="text-xs font-black uppercase tracking-widest">Today</p>
-      <h1 class="mt-1 text-5xl font-black leading-tight"><%= @date.strftime("%A") %></h1>
-      <p class="mt-2 text-sm text-black/70"><%= @date.strftime("%B %d, %Y") %></p>
+      <h1 class="mt-1 text-3xl md:text-5xl font-black leading-tight"><%= @date.strftime("%A") %></h1>
+      <p class="mt-1 md:mt-2 text-sm text-black/70"><%= @date.strftime("%B %d, %Y") %></p>
     </div>
 
-    <div class="flex items-center gap-3">
-      <div class="nb-pill nb-pill--white">
-        <span class="inline-block h-2 w-2 border-2 border-black bg-black"></span>
-        <span><%= @total_hours %>h logged</span>
-      </div>
-      <%= link_to "Manage habits", habits_path, class: "nb-btn nb-btn--white" %>
+    <div class="nb-pill nb-pill--white">
+      <span class="inline-block h-2 w-2 border-2 border-black bg-black"></span>
+      <span><%= @total_hours %>h logged</span>
     </div>
   </div>
 
@@ -100,7 +97,7 @@
 
     <!-- Instruction overlay when empty -->
     <% if @time_blocks.empty? %>
-      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
         <div class="nb-card nb-card--tight bg-white/95 text-center max-w-xs">
           <p class="text-lg font-black hidden md:block">Drag to log time</p>
           <p class="text-lg font-black md:hidden">Drag ＋ to log time</p>
