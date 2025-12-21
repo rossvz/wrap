@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_21_203302) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_21_205633) do
   create_table "habit_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "end_hour", precision: 3, scale: 1
@@ -25,7 +25,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_21_203302) do
 
   create_table "habits", force: :cascade do |t|
     t.boolean "active", default: true, null: false
-    t.string "color", default: "#FDE047", null: false
+    t.string "color", null: false
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
