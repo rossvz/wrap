@@ -20,34 +20,33 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-gradient-to-br from-violet-50 via-white to-amber-50">
+  <body class="min-h-screen">
     <main class="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div class="w-full max-w-md">
-        <div class="mb-8 text-center">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 text-2xl font-black text-white shadow-lg">
-            W
+        <div class="mb-8 flex items-center justify-center gap-4">
+          <div class="nb-logo text-2xl">W</div>
+          <div>
+            <p class="text-xs font-black uppercase tracking-widest">Wrap</p>
+            <p class="text-sm text-black/70">Track your habits with intention</p>
           </div>
-          <h1 class="text-2xl font-bold text-gray-900">Wrap</h1>
-          <p class="mt-1 text-sm text-gray-600">Track your habits with intention</p>
         </div>
 
         <% if flash[:notice] %>
-          <div class="mb-6 rounded-lg bg-green-50 p-4 text-sm text-green-800 border border-green-200">
-            <%= flash[:notice] %>
+          <div class="nb-card nb-card--tight nb-card--notice mb-6">
+            <p class="text-sm font-bold"><%= flash[:notice] %></p>
           </div>
         <% end %>
 
         <% if flash[:alert] %>
-          <div class="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-800 border border-red-200">
-            <%= flash[:alert] %>
+          <div class="nb-card nb-card--tight nb-card--alert mb-6">
+            <p class="text-sm font-bold"><%= flash[:alert] %></p>
           </div>
         <% end %>
 
-        <div class="rounded-2xl bg-white p-8 shadow-xl shadow-gray-200/50 ring-1 ring-gray-100">
+        <div class="nb-card">
           <%= yield %>
         </div>
       </div>
     </main>
   </body>
 </html>
-
