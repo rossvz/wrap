@@ -11,7 +11,7 @@
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
       <%= link_to "All habits", habits_path, class: "nb-btn nb-btn--white" %>
       <%= link_to "Edit", edit_habit_path(@habit), class: "nb-btn nb-btn--white" %>
-      <%= button_to "Delete", habit_path(@habit), method: :delete, class: "nb-btn nb-btn--red", data: { turbo_confirm: "Delete this habit?" } %>
+      <%= button_to "Delete", habit_path(@habit), method: :delete, class: "nb-btn nb-btn--red" %>
     </div>
   </div>
 
