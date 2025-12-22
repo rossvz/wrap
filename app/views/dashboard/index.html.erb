@@ -1,15 +1,12 @@
 <% content_for :title, "Your Day" %>
-
-<div class="nb-page" data-controller="time-block" data-time-block-date-value="<%= @day.date.to_s %>" data-time-block-hour-height-value="60" data-time-block-start-hour-value="6" data-time-block-end-hour-value="24">
+<div class="nb-page" data-controller="time-block" data-time-block-date-value="<%= @day.date.to_s %>" data-time-block-hour-height-value="60" data-time-block-start-hour-value="6" data-time-block-end-hour-value="24" >
   <%= render "dashboard/header", day: @day %>
-
   <!-- Timeline Calendar -->
   <%= render "dashboard/timeline", day: @day %>
-
   <!-- Habit Selection Modal (for creating new time blocks via drag) -->
   <div data-time-block-target="modal"
        class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 p-4"
-       data-action="click->time-block#closeModal">
+       data-action="click->time-block#closeModal turbo:submit-end@window->time-block#closeModal">
     <div class="nb-card w-full max-w-md max-h-[80vh] overflow-y-auto"
          onclick="event.stopPropagation()">
       <div class="flex items-center justify-between mb-4">
@@ -21,11 +18,9 @@
           ✕
         </button>
       </div>
-
       <!-- Hidden inputs for form submission -->
       <input type="hidden" data-time-block-target="startHourInput">
       <input type="hidden" data-time-block-target="endHourInput">
-
       <!-- Existing habits -->
       <% if @day.habits.any? %>
         <p class="text-xs font-black uppercase tracking-widest mb-3">Choose a habit</p>
@@ -36,7 +31,7 @@
                     style="background: <%= habit.color_css_var %>;"
                     data-token="<%= habit.color_token %>"
                     data-action="click->time-block#selectHabit"
-                    data-habit-id="<%= habit.id %>">
+              data-habit-id="<%= habit.id %>">
               <span class="inline-block w-3 h-3 border-2 border-black rounded-full mr-2"
                     style="background: <%= habit.color_css_var %>;"></span>
               <%= habit.name %>
@@ -44,7 +39,6 @@
           <% end %>
         </div>
       <% end %>
-
       <!-- Quick create new habit -->
       <p class="text-xs font-black uppercase tracking-widest mb-3">Or create new</p>
       <div class="flex gap-2">
@@ -61,7 +55,6 @@
       </div>
     </div>
   </div>
-
   <!-- Turbo Frame for Edit Modal (loaded via link click on time blocks) -->
   <%= turbo_frame_tag "edit_modal" %>
 </div>
