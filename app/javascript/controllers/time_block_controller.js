@@ -1,12 +1,12 @@
 import { Controller } from "@hotwired/stimulus";
 
 // Connects to data-controller="time-block"
+// Handles drag-to-create new time blocks on the dashboard timeline
 export default class extends Controller {
   static targets = [
     "timeline",
     "selection",
     "modal",
-    "habitSelect",
     "newHabitName",
     "startHourInput",
     "endHourInput",
@@ -77,7 +77,6 @@ export default class extends Controller {
 
   // Get starting hour from the element that was clicked/touched
   getHourFromElement(element) {
-    // Look for data-hour on the element or its parents
     const hourElement = element.closest("[data-hour]");
     if (hourElement) {
       const hour = parseInt(hourElement.dataset.hour, 10);
@@ -90,14 +89,17 @@ export default class extends Controller {
 
   // Mouse events (desktop - works on hour-content area)
   startDrag(event) {
+    // Don't start drag if clicking on an existing time block (it's a link now)
     if (event.target.closest("[data-time-block]")) return;
 
     event.preventDefault();
     this.isDragging = true;
-    
-    // Try to get hour from element first, fall back to Y position
+
     const hourFromElement = this.getHourFromElement(event.target);
-    this.dragStartHour = hourFromElement !== null ? hourFromElement : this.getHourFromY(event.clientY);
+    this.dragStartHour =
+      hourFromElement !== null
+        ? hourFromElement
+        : this.getHourFromY(event.clientY);
     this.selectedStartHour = this.dragStartHour;
     this.selectedEndHour = this.dragStartHour + 1;
 
@@ -148,19 +150,19 @@ export default class extends Controller {
   startTouchDrag(event) {
     if (event.target.closest("[data-time-block]")) return;
 
-    // Only start drag if touching a drag handle
     const dragHandle = event.target.closest(".drag-handle");
     if (!dragHandle) return;
 
-    // Prevent default to stop scroll when dragging from handle
     event.preventDefault();
 
     const touch = event.touches[0];
     this.isDragging = true;
-    
-    // Get the starting hour from the drag handle's data attribute
+
     const hourFromElement = this.getHourFromElement(dragHandle);
-    this.dragStartHour = hourFromElement !== null ? hourFromElement : this.getHourFromY(touch.clientY);
+    this.dragStartHour =
+      hourFromElement !== null
+        ? hourFromElement
+        : this.getHourFromY(touch.clientY);
     this.selectedStartHour = this.dragStartHour;
     this.selectedEndHour = this.dragStartHour + 1;
 
@@ -237,8 +239,6 @@ export default class extends Controller {
 
     if (!startSlot || !endSlot) return;
 
-    // Use offsetTop - the position within the scrollable container
-    // This works because the selection element is now inside the same scrollable container
     const top = startSlot.offsetTop;
     const height =
       endSlot.offsetTop + endSlot.offsetHeight - startSlot.offsetTop;
@@ -347,37 +347,5 @@ export default class extends Controller {
     return m === 0
       ? `${displayHour}${period}`
       : `${displayHour}:${m.toString().padStart(2, "0")}${period}`;
-  }
-
-  deleteBlock(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const blockId = event.currentTarget.dataset.blockId;
-    const habitId = event.currentTarget.dataset.habitId;
-
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = `/habits/${habitId}/logs/${blockId}`;
-
-    const methodInput = document.createElement("input");
-    methodInput.type = "hidden";
-    methodInput.name = "_method";
-    methodInput.value = "DELETE";
-    form.appendChild(methodInput);
-
-    const csrfToken = document.querySelector(
-      'meta[name="csrf-token"]'
-    )?.content;
-    if (csrfToken) {
-      const csrfInput = document.createElement("input");
-      csrfInput.type = "hidden";
-      csrfInput.name = "authenticity_token";
-      csrfInput.value = csrfToken;
-      form.appendChild(csrfInput);
-    }
-
-    document.body.appendChild(form);
-    form.submit();
   }
 }
