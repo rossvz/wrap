@@ -2,15 +2,30 @@
 
 <div class="nb-page" data-controller="time-block" data-time-block-date-value="<%= @date.to_s %>" data-time-block-hour-height-value="60" data-time-block-start-hour-value="6" data-time-block-end-hour-value="24">
   <div class="nb-page-header">
-    <div>
+    <div class="flex-1">
       <p class="text-xs font-black uppercase tracking-widest">Today</p>
       <h1 class="mt-1 text-3xl md:text-5xl font-black leading-tight"><%= @date.strftime("%A") %></h1>
       <p class="mt-1 md:mt-2 text-sm text-black/70"><%= @date.strftime("%B %d, %Y") %></p>
     </div>
 
-    <div class="nb-pill nb-pill--white">
-      <span class="inline-block h-2 w-2 border-2 border-black bg-black"></span>
-      <span><%= @total_hours %>h logged</span>
+    <!-- Activity visualization - bucket fill style -->
+    <div class="flex flex-col items-end gap-2">
+      <div class="nb-pill nb-pill--white">
+        <span class="inline-block h-2 w-2 border-2 border-black bg-black"></span>
+        <span><%= @total_hours %>h logged</span>
+      </div>
+
+      <!-- Rectangular minimap of the day -->
+      <div class="w-32 md:w-48 h-16 md:h-20 border-2 border-black rounded-lg overflow-hidden bg-white flex flex-col-reverse"
+           style="box-shadow: 3px 3px 0 #000;">
+        <% @activity_breakdown.each do |entry| %>
+          <% percent = (entry[:hours] / @total_day_hours) * 100 %>
+          <div class="w-full shrink-0 border-t border-black/20 first:border-t-0"
+               style="height: <%= percent %>%; background: <%= entry[:habit].color_css_var %>;"
+               title="<%= entry[:habit].name %>: <%= entry[:hours].round(1) %>h">
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 
@@ -105,22 +120,6 @@
         </div>
       </div>
     <% end %>
-  </div>
-
-  <!-- Stats row -->
-  <div class="grid gap-4 md:grid-cols-3">
-    <div class="nb-card nb-card--tight bg-stat-today">
-      <p class="text-xs font-black uppercase tracking-widest">Today</p>
-      <p class="mt-2 text-2xl font-black"><%= format_hours(@totals[:today]) %></p>
-    </div>
-    <div class="nb-card nb-card--tight bg-stat-week">
-      <p class="text-xs font-black uppercase tracking-widest">This week</p>
-      <p class="mt-2 text-2xl font-black"><%= format_hours(@totals[:week]) %></p>
-    </div>
-    <div class="nb-card nb-card--tight bg-stat-alltime">
-      <p class="text-xs font-black uppercase tracking-widest">All-time</p>
-      <p class="mt-2 text-2xl font-black"><%= format_hours(@totals[:all_time]) %></p>
-    </div>
   </div>
 
   <!-- Habit Selection Modal -->

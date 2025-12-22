@@ -12,21 +12,13 @@ class DashboardController < ApplicationController
     # Calculate total hours logged today
     @total_hours = @time_blocks.sum(&:duration_hours).round(1)
 
-    # Calculate totals for stats
-    week_range = @date.beginning_of_week..@date.end_of_week
-    all_logs = HabitLog.where(habit_id: @habits.select(:id))
+    # Aggregate hours by habit for the activity visualization
+    # Returns array of { habit: Habit, hours: Float } sorted by most hours
+    @activity_breakdown = @time_blocks.group_by(&:habit).map do |habit, logs|
+      { habit: habit, hours: logs.sum(&:duration_hours) }
+    end.sort_by { |entry| -entry[:hours] }
 
-    @totals = {
-      today: @total_hours,
-      week: calculate_total_hours(all_logs.where(logged_on: week_range)),
-      all_time: calculate_total_hours(all_logs)
-    }
-  end
-
-  private
-
-  def calculate_total_hours(logs)
-    # Sum duration for each log (end_hour - start_hour)
-    logs.sum("end_hour - start_hour").to_f.round(1)
+    # Total available hours in the day view (6am to midnight = 18 hours)
+    @total_day_hours = 18.0
   end
 end
