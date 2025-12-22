@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(ruby -e:*)",
+      "Bash(RAILS_ENV=test bin/rails runner:*)"
     ]
   }
 }

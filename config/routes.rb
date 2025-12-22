@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   root "dashboard#index"
   get "dashboard" => "dashboard#index"
+  delete "dashboard/clear_day" => "dashboard#clear_day", as: :clear_day
 
   # User settings
   resource :settings, only: [ :show, :update ]

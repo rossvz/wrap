@@ -24,6 +24,12 @@
         </div>
       <% end %>
     </div>
+
+    <% if day.total_hours > 0 %>
+      <%= button_to clear_day_path, method: :delete, class: "nb-btn nb-btn--white text-xs", data: { turbo_confirm: "Clear all time blocks for today?" } do %>
+        Clear Day
+      <% end %>
+    <% end %>
   </div>
 </div>
 
