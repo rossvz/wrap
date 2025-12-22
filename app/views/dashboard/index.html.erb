@@ -1,33 +1,7 @@
 <% content_for :title, "Your Day" %>
 
 <div class="nb-page" data-controller="time-block" data-time-block-date-value="<%= @day.date.to_s %>" data-time-block-hour-height-value="60" data-time-block-start-hour-value="6" data-time-block-end-hour-value="24">
-  <div class="nb-page-header">
-    <div class="flex-1">
-      <p class="text-xs font-black uppercase tracking-widest">Today</p>
-      <h1 class="mt-1 text-3xl md:text-5xl font-black leading-tight"><%= @day.date.strftime("%A") %></h1>
-      <p class="mt-1 md:mt-2 text-sm text-black/70"><%= @day.date.strftime("%B %d, %Y") %></p>
-    </div>
-
-    <!-- Activity visualization - bucket fill style -->
-    <div class="flex flex-col items-end gap-2">
-      <div class="nb-pill nb-pill--white">
-        <span class="inline-block h-2 w-2 border-2 border-black bg-black"></span>
-        <span><%= @day.total_hours %>h logged</span>
-      </div>
-
-      <!-- Rectangular minimap of the day -->
-      <div class="w-32 md:w-48 h-16 md:h-20 border-2 border-black rounded-lg overflow-hidden bg-white flex flex-col-reverse"
-           style="box-shadow: 3px 3px 0 #000;">
-        <% @day.activity_breakdown.each do |entry| %>
-          <% percent = (entry[:hours] / @day.total_day_hours) * 100 %>
-          <div class="w-full shrink-0 border-t border-black/20 first:border-t-0"
-               style="height: <%= percent %>%; background: <%= entry[:habit].color_css_var %>;"
-               title="<%= entry[:habit].name %>: <%= entry[:hours].round(1) %>h">
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
+  <%= render "dashboard/header", day: @day %>
 
   <!-- Timeline Calendar -->
   <%= render "dashboard/timeline", day: @day %>

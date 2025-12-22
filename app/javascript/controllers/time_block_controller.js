@@ -18,6 +18,11 @@ export default class extends Controller {
     endHour: { type: Number, default: 24 },
   };
 
+  // Called once when controller is first instantiated (before targets connect)
+  initialize() {
+    this.hourSlots = new Map();
+  }
+
   connect() {
     this.isDragging = false;
     this.dragStartHour = null;
@@ -29,14 +34,16 @@ export default class extends Controller {
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleTouchMove = this.handleTouchMove.bind(this);
     this.handleTouchEnd = this.handleTouchEnd.bind(this);
-
-    // Build hour slot map
-    this.hourSlots = new Map();
-    this.buildHourSlotMap();
   }
 
   disconnect() {
     this.cleanupListeners();
+  }
+
+  // Called by Stimulus when the timeline target element is (re)connected to the DOM
+  // This handles Turbo Stream replacements that swap out the timeline content
+  timelineTargetConnected() {
+    this.buildHourSlotMap();
   }
 
   buildHourSlotMap() {

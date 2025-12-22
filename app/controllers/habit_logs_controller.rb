@@ -49,7 +49,7 @@ class HabitLogsController < ApplicationController
 
     if @habit_log.update(habit_log_params)
       respond_to do |format|
-        format.turbo_stream { render_after_edit }
+        format.turbo_stream { render_dashboard_update }
         format.html { redirect_to redirect_destination, notice: "Updated." }
       end
     else
@@ -68,7 +68,7 @@ class HabitLogsController < ApplicationController
     @habit_log.destroy!
 
     respond_to do |format|
-      format.turbo_stream { render_after_edit(notice: "Time block deleted.") }
+      format.turbo_stream { render_dashboard_update(notice: "Time block deleted.") }
       format.html { redirect_to redirect_destination, notice: "Time block deleted." }
     end
   end
@@ -107,11 +107,12 @@ class HabitLogsController < ApplicationController
     nil
   end
 
-  def render_after_edit(notice: "Updated.")
+  def render_dashboard_update(notice: "Updated.")
     day = DaySummary.new(current_user, Date.current)
 
     render turbo_stream: [
       turbo_stream.replace("flash", partial: "shared/flash", locals: { notice: notice }),
+      turbo_stream.replace("dashboard_header", partial: "dashboard/header", locals: { day: day }),
       turbo_stream.replace("timeline", partial: "dashboard/timeline", locals: { day: day }),
       turbo_stream.replace("edit_modal", "<turbo-frame id=\"edit_modal\"></turbo-frame>")
     ]
