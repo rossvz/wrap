@@ -1,16 +1,31 @@
 <% content_for :title, "Your Day" %>
 
-<div class="nb-page" data-controller="time-block" data-time-block-date-value="<%= @date.to_s %>" data-time-block-hour-height-value="60" data-time-block-start-hour-value="6" data-time-block-end-hour-value="24">
+<div class="nb-page" data-controller="time-block" data-time-block-date-value="<%= @day.date.to_s %>" data-time-block-hour-height-value="60" data-time-block-start-hour-value="6" data-time-block-end-hour-value="24">
   <div class="nb-page-header">
-    <div>
+    <div class="flex-1">
       <p class="text-xs font-black uppercase tracking-widest">Today</p>
-      <h1 class="mt-1 text-3xl md:text-5xl font-black leading-tight"><%= @date.strftime("%A") %></h1>
-      <p class="mt-1 md:mt-2 text-sm text-black/70"><%= @date.strftime("%B %d, %Y") %></p>
+      <h1 class="mt-1 text-3xl md:text-5xl font-black leading-tight"><%= @day.date.strftime("%A") %></h1>
+      <p class="mt-1 md:mt-2 text-sm text-black/70"><%= @day.date.strftime("%B %d, %Y") %></p>
     </div>
 
-    <div class="nb-pill nb-pill--white">
-      <span class="inline-block h-2 w-2 border-2 border-black bg-black"></span>
-      <span><%= @total_hours %>h logged</span>
+    <!-- Activity visualization - bucket fill style -->
+    <div class="flex flex-col items-end gap-2">
+      <div class="nb-pill nb-pill--white">
+        <span class="inline-block h-2 w-2 border-2 border-black bg-black"></span>
+        <span><%= @day.total_hours %>h logged</span>
+      </div>
+
+      <!-- Rectangular minimap of the day -->
+      <div class="w-32 md:w-48 h-16 md:h-20 border-2 border-black rounded-lg overflow-hidden bg-white flex flex-col-reverse"
+           style="box-shadow: 3px 3px 0 #000;">
+        <% @day.activity_breakdown.each do |entry| %>
+          <% percent = (entry[:hours] / @day.total_day_hours) * 100 %>
+          <div class="w-full shrink-0 border-t border-black/20 first:border-t-0"
+               style="height: <%= percent %>%; background: <%= entry[:habit].color_css_var %>;"
+               title="<%= entry[:habit].name %>: <%= entry[:hours].round(1) %>h">
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 
@@ -57,7 +72,7 @@
           <div class="flex-1 relative hour-content" data-hour="<%= hour %>"
                data-action="mousedown->time-block#startDrag">
             <!-- Existing time blocks for this hour -->
-            <% @time_blocks.select { |b| b.start_hour.to_i == hour }.each do |block| %>
+            <% @day.time_blocks.select { |b| b.start_hour.to_i == hour }.each do |block| %>
               <% block_height = (block.end_hour - block.start_hour) * 60 %>
               <div class="absolute inset-x-1 z-10 rounded-lg border-2 border-black cursor-pointer transition-transform hover:scale-[1.02] habit-card"
                    style="top: 0; height: <%= block_height %>px; background: <%= block.habit.color_css_var %>;"
@@ -96,7 +111,7 @@
     </div>
 
     <!-- Instruction overlay when empty -->
-    <% if @time_blocks.empty? %>
+    <% if @day.time_blocks.empty? %>
       <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
         <div class="nb-card nb-card--tight bg-white/95 text-center max-w-xs">
           <p class="text-lg font-black hidden md:block">Drag to log time</p>
@@ -105,22 +120,6 @@
         </div>
       </div>
     <% end %>
-  </div>
-
-  <!-- Stats row -->
-  <div class="grid gap-4 md:grid-cols-3">
-    <div class="nb-card nb-card--tight bg-stat-today">
-      <p class="text-xs font-black uppercase tracking-widest">Today</p>
-      <p class="mt-2 text-2xl font-black"><%= format_hours(@totals[:today]) %></p>
-    </div>
-    <div class="nb-card nb-card--tight bg-stat-week">
-      <p class="text-xs font-black uppercase tracking-widest">This week</p>
-      <p class="mt-2 text-2xl font-black"><%= format_hours(@totals[:week]) %></p>
-    </div>
-    <div class="nb-card nb-card--tight bg-stat-alltime">
-      <p class="text-xs font-black uppercase tracking-widest">All-time</p>
-      <p class="mt-2 text-2xl font-black"><%= format_hours(@totals[:all_time]) %></p>
-    </div>
   </div>
 
   <!-- Habit Selection Modal -->
@@ -145,10 +144,10 @@
       <input type="hidden" data-time-block-target="endHourInput">
 
       <!-- Existing habits -->
-      <% if @habits.any? %>
+      <% if @day.habits.any? %>
         <p class="text-xs font-black uppercase tracking-widest mb-3">Choose a habit</p>
         <div class="grid gap-2 mb-6">
-          <% @habits.each do |habit| %>
+          <% @day.habits.each do |habit| %>
             <button type="button"
                     class="nb-btn text-left justify-start habit-card"
                     style="background: <%= habit.color_css_var %>;"
