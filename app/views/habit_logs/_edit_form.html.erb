@@ -42,13 +42,13 @@
   <div class="flex gap-3 mb-6">
     <div class="flex-1">
       <label class="block text-xs font-bold mb-1">Start</label>
-      <%= f.select :start_hour, hour_options_for_select(6, 23, include_half: true),
+      <%= f.select :start_hour, hour_options_for_select(6, 23),
           { selected: habit_log.start_hour },
           class: "nb-input w-full" %>
     </div>
     <div class="flex-1">
       <label class="block text-xs font-bold mb-1">End</label>
-      <%= f.select :end_hour, hour_options_for_select(7, 24, include_half: true),
+      <%= f.select :end_hour, hour_options_for_select(7, 24),
           { selected: habit_log.end_hour },
           class: "nb-input w-full" %>
     </div>
