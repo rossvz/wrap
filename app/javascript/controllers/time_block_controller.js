@@ -10,6 +10,14 @@ export default class extends Controller {
     "newHabitName",
     "startHourInput",
     "endHourInput",
+    // Edit modal targets
+    "editModal",
+    "editTimeDisplay",
+    "editBlockId",
+    "editOriginalHabitId",
+    "editHabitButton",
+    "editStartHour",
+    "editEndHour",
   ];
   static values = {
     date: String,
@@ -23,6 +31,11 @@ export default class extends Controller {
     this.dragStartHour = null;
     this.selectedStartHour = null;
     this.selectedEndHour = null;
+
+    // Edit modal state
+    this.editingBlockId = null;
+    this.editingHabitId = null;
+    this.editingOriginalHabitId = null;
 
     // Bind event handlers
     this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -349,16 +362,199 @@ export default class extends Controller {
       : `${displayHour}:${m.toString().padStart(2, "0")}${period}`;
   }
 
-  deleteBlock(event) {
+  // Edit modal methods
+  openEditModal(event) {
     event.preventDefault();
     event.stopPropagation();
 
-    const blockId = event.currentTarget.dataset.blockId;
+    const target = event.currentTarget;
+    this.editingBlockId = target.dataset.blockId;
+    this.editingHabitId = target.dataset.habitId;
+    this.editingOriginalHabitId = target.dataset.habitId;
+
+    const startHour = parseFloat(target.dataset.startHour);
+    const endHour = parseFloat(target.dataset.endHour);
+
+    // Store in hidden inputs
+    if (this.hasEditBlockIdTarget) {
+      this.editBlockIdTarget.value = this.editingBlockId;
+    }
+    if (this.hasEditOriginalHabitIdTarget) {
+      this.editOriginalHabitIdTarget.value = this.editingOriginalHabitId;
+    }
+
+    // Set the time dropdowns
+    if (this.hasEditStartHourTarget) {
+      this.editStartHourTarget.value = startHour;
+    }
+    if (this.hasEditEndHourTarget) {
+      this.editEndHourTarget.value = endHour;
+    }
+
+    // Update time display
+    this.updateEditTimeDisplay();
+
+    // Highlight the current habit
+    this.updateEditHabitSelection();
+
+    // Show modal
+    if (this.hasEditModalTarget) {
+      this.editModalTarget.classList.remove("hidden");
+      this.editModalTarget.classList.add("flex");
+    }
+  }
+
+  closeEditModal() {
+    if (this.hasEditModalTarget) {
+      this.editModalTarget.classList.add("hidden");
+      this.editModalTarget.classList.remove("flex");
+    }
+    this.editingBlockId = null;
+    this.editingHabitId = null;
+    this.editingOriginalHabitId = null;
+  }
+
+  selectEditHabit(event) {
+    event.preventDefault();
     const habitId = event.currentTarget.dataset.habitId;
+    this.editingHabitId = habitId;
+    this.updateEditHabitSelection();
+  }
+
+  updateEditHabitSelection() {
+    if (!this.hasEditHabitButtonTarget) return;
+
+    this.editHabitButtonTargets.forEach((button) => {
+      const checkmark = button.querySelector("[data-checkmark]");
+      if (button.dataset.habitId === this.editingHabitId) {
+        button.classList.add("ring-2", "ring-black", "ring-offset-2");
+        if (checkmark) checkmark.classList.remove("hidden");
+      } else {
+        button.classList.remove("ring-2", "ring-black", "ring-offset-2");
+        if (checkmark) checkmark.classList.add("hidden");
+      }
+    });
+  }
+
+  updateEditTimeDisplay() {
+    if (!this.hasEditTimeDisplayTarget) return;
+
+    const start = parseFloat(this.editStartHourTarget?.value || 0);
+    const end = parseFloat(this.editEndHourTarget?.value || 0);
+
+    this.editTimeDisplayTarget.textContent = `${this.formatHour(start)} - ${this.formatHour(end)}`;
+  }
+
+  saveEdit(event) {
+    event.preventDefault();
+
+    const startHour = parseFloat(this.editStartHourTarget?.value || 0);
+    const endHour = parseFloat(this.editEndHourTarget?.value || 0);
+
+    // Validate
+    if (endHour <= startHour) {
+      alert("End time must be after start time");
+      return;
+    }
+
+    const habitChanged = this.editingHabitId !== this.editingOriginalHabitId;
+
+    if (habitChanged) {
+      // Delete old and create new
+      this.deleteAndRecreate(startHour, endHour);
+    } else {
+      // Just update the existing log
+      this.updateBlock(startHour, endHour);
+    }
+  }
+
+  updateBlock(startHour, endHour) {
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = `/habits/${this.editingOriginalHabitId}/logs/${this.editingBlockId}`;
+
+    const methodInput = document.createElement("input");
+    methodInput.type = "hidden";
+    methodInput.name = "_method";
+    methodInput.value = "PATCH";
+    form.appendChild(methodInput);
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    if (csrfToken) {
+      const csrfInput = document.createElement("input");
+      csrfInput.type = "hidden";
+      csrfInput.name = "authenticity_token";
+      csrfInput.value = csrfToken;
+      form.appendChild(csrfInput);
+    }
+
+    const fields = {
+      "habit_log[start_hour]": startHour,
+      "habit_log[end_hour]": endHour,
+    };
+
+    for (const [name, value] of Object.entries(fields)) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = name;
+      input.value = value;
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  deleteAndRecreate(startHour, endHour) {
+    // Use fetch to delete, then create new
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    fetch(`/habits/${this.editingOriginalHabitId}/logs/${this.editingBlockId}`, {
+      method: "DELETE",
+      headers: {
+        "X-CSRF-Token": csrfToken,
+        "Accept": "text/html",
+      },
+    }).then(() => {
+      // Now create new log with the new habit
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/habit_logs";
+
+      if (csrfToken) {
+        const csrfInput = document.createElement("input");
+        csrfInput.type = "hidden";
+        csrfInput.name = "authenticity_token";
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+      }
+
+      const fields = {
+        "habit_log[habit_id]": this.editingHabitId,
+        "habit_log[logged_on]": this.dateValue,
+        "habit_log[start_hour]": startHour,
+        "habit_log[end_hour]": endHour,
+      };
+
+      for (const [name, value] of Object.entries(fields)) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+    });
+  }
+
+  confirmDelete(event) {
+    event.preventDefault();
 
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = `/habits/${habitId}/logs/${blockId}`;
+    form.action = `/habits/${this.editingOriginalHabitId}/logs/${this.editingBlockId}`;
 
     const methodInput = document.createElement("input");
     methodInput.type = "hidden";
@@ -366,9 +562,7 @@ export default class extends Controller {
     methodInput.value = "DELETE";
     form.appendChild(methodInput);
 
-    const csrfToken = document.querySelector(
-      'meta[name="csrf-token"]'
-    )?.content;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
     if (csrfToken) {
       const csrfInput = document.createElement("input");
       csrfInput.type = "hidden";

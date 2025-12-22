@@ -38,12 +38,12 @@ class HabitLogsController < ApplicationController
     if @habit_log.update(habit_log_params)
       respond_to do |format|
         format.turbo_stream { render_update_streams(notice: "Updated.") }
-        format.html { redirect_to habit_path(@habit), notice: "Updated." }
+        format.html { redirect_to redirect_destination, notice: "Updated." }
       end
     else
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.replace(helpers.dom_id(@habit_log), partial: "habit_logs/log", locals: { habit: @habit, habit_log: @habit_log }), status: :unprocessable_entity }
-        format.html { redirect_to habit_path(@habit), alert: @habit_log.errors.full_messages.to_sentence }
+        format.html { redirect_to redirect_destination, alert: @habit_log.errors.full_messages.to_sentence }
       end
     end
   end
@@ -96,6 +96,14 @@ class HabitLogsController < ApplicationController
     render turbo_stream: [
       turbo_stream.replace("flash", partial: "shared/flash", locals: { notice: notice })
     ]
+  end
+
+  def redirect_destination
+    if request.referer&.include?("/dashboard") || request.referer == root_url
+      dashboard_path
+    else
+      habit_path(@habit)
+    end
   end
 
   def render_update_streams(notice:)
