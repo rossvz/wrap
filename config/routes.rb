@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   resources :habit_logs, only: [ :create ]
 
   resources :habits do
-    resources :habit_logs, path: "logs", only: %i[index create update destroy]
+    resources :habit_logs, path: "logs", only: %i[index create edit update destroy]
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -1,0 +1,10 @@
+<%= turbo_frame_tag "edit_modal" do %>
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+       data-controller="modal"
+       data-action="click->modal#closeOnBackdrop keydown.esc@window->modal#close">
+    <div class="nb-card w-full max-w-md max-h-[80vh] overflow-y-auto"
+         data-modal-target="content">
+      <%= render "habit_logs/edit_form", habit: @habit, habit_log: @habit_log, habits: @habits %>
+    </div>
+  </div>
+<% end %>

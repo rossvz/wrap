@@ -30,105 +30,13 @@
   </div>
 
   <!-- Timeline Calendar -->
-  <div class="nb-card relative overflow-hidden p-0">
-    <!-- Mobile drag hint -->
-    <div class="md:hidden flex items-center justify-center border-b-2 border-black bg-white px-3 py-2">
-      <span class="text-xs font-bold text-black flex items-center gap-1">
-        <span class="inline-block w-3 h-3 rounded bg-black/10 border border-dashed border-black/40"></span>
-        Drag ＋ to add time
-      </span>
-    </div>
+  <%= render "dashboard/timeline", day: @day %>
 
-    <div class="timeline-container relative" data-time-block-target="timeline">
-
-      <% sections = {
-        6 => { name: "Your Morning", bg: "bg-morning" },
-        12 => { name: "Your Afternoon", bg: "bg-afternoon" },
-        18 => { name: "Your Evening", bg: "bg-evening" }
-      } %>
-
-      <!-- All hour rows in one continuous grid -->
-      <% (6...24).each do |hour| %>
-        <% section = sections[hour] %>
-        <% section_bg = sections.select { |h, _| h <= hour }.max_by { |h, _| h }&.last&.dig(:bg) || "bg-white" %>
-        
-        <% if section %>
-          <!-- Section header row -->
-          <div class="sticky top-0 z-30 border-b-2 border-black bg-white/95 backdrop-blur px-4 py-2">
-            <p class="text-sm font-black uppercase tracking-widest"><%= section[:name] %></p>
-          </div>
-        <% end %>
-
-        <div class="timeline-hour flex border-b border-black/10 <%= section_bg %> relative" 
-             style="height: 60px;"
-             data-hour="<%= hour %>">
-          <!-- Time label - scrollable area -->
-          <div class="w-12 shrink-0 border-r border-black/10 bg-white/50 px-2 py-1">
-            <span class="text-xs font-bold text-black/50"><%= format_hour(hour) %></span>
-          </div>
-          
-          <!-- Main content area - scrollable on mobile, draggable on desktop -->
-          <div class="flex-1 relative hour-content" data-hour="<%= hour %>"
-               data-action="mousedown->time-block#startDrag">
-            <!-- Existing time blocks for this hour -->
-            <% @day.time_blocks.select { |b| b.start_hour.to_i == hour }.each do |block| %>
-              <% block_height = (block.end_hour - block.start_hour) * 60 %>
-              <div class="absolute inset-x-1 z-10 rounded-lg border-2 border-black cursor-pointer transition-transform hover:scale-[1.02] habit-card"
-                   style="top: 0; height: <%= block_height %>px; background: <%= block.habit.color_css_var %>;"
-                   data-token="<%= block.habit.color_token %>"
-                   data-time-block
-                   data-action="click->time-block#openEditModal"
-                   data-block-id="<%= block.id %>"
-                   data-habit-id="<%= block.habit_id %>"
-                   data-start-hour="<%= block.start_hour %>"
-                   data-end-hour="<%= block.end_hour %>">
-                <div class="p-2 h-full flex flex-col">
-                  <p class="font-black text-sm truncate"><%= block.habit.name %></p>
-                  <% if block.duration_hours >= 2 %>
-                    <p class="text-xs opacity-70 mt-1"><%= block.time_range_display %></p>
-                  <% end %>
-                  <% if block.notes.present? && block.duration_hours >= 2 %>
-                    <p class="text-xs opacity-50 mt-auto truncate"><%= block.notes %></p>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          </div>
-
-          <!-- Drag handle zone - for mobile touch dragging -->
-          <div class="drag-handle w-12 shrink-0 border-l border-dashed border-black/20 flex items-center justify-center cursor-pointer"
-               data-hour="<%= hour %>"
-               data-action="touchstart->time-block#startTouchDrag mousedown->time-block#startDrag">
-            <span class="text-lg font-black text-black/30 select-none">＋</span>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- Drag selection overlay - INSIDE the scrollable container -->
-      <div data-time-block-target="selection"
-           class="hidden absolute left-12 right-12 md:right-1 border-2 border-dashed rounded-lg z-20 pointer-events-none"
-           style="top: 0; height: 60px; background: var(--accent-primary); opacity: 0.5; border-color: var(--accent-primary);">
-      </div>
-    </div>
-
-    <!-- Instruction overlay when empty -->
-    <% if @day.time_blocks.empty? %>
-      <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-40">
-        <div class="nb-card nb-card--tight bg-white/95 text-center max-w-xs">
-          <p class="text-lg font-black hidden md:block">Drag to log time</p>
-          <p class="text-lg font-black md:hidden">Drag ＋ to log time</p>
-          <p class="text-sm text-black/70 mt-1">Select a time range, then choose a habit</p>
-        </div>
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Habit Selection Modal -->
+  <!-- Habit Selection Modal (for creating new time blocks via drag) -->
   <div data-time-block-target="modal"
        class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 p-4"
        data-action="click->time-block#closeModal">
     <div class="nb-card w-full max-w-md max-h-[80vh] overflow-y-auto"
-         data-action="click->time-block#stopPropagation"
          onclick="event.stopPropagation()">
       <div class="flex items-center justify-between mb-4">
         <div>
@@ -180,84 +88,6 @@
     </div>
   </div>
 
-  <!-- Edit Time Block Modal -->
-  <div data-time-block-target="editModal"
-       class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 p-4"
-       data-action="click->time-block#closeEditModal">
-    <div class="nb-card w-full max-w-md max-h-[80vh] overflow-y-auto"
-         onclick="event.stopPropagation()">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <p class="text-xs font-black uppercase tracking-widest">Edit time block</p>
-          <p class="text-2xl font-black mt-1" data-time-block-target="editTimeDisplay">--</p>
-        </div>
-        <button type="button" class="nb-btn nb-btn--white" data-action="click->time-block#closeEditModal">
-          ✕
-        </button>
-      </div>
-
-      <!-- Hidden inputs for form submission -->
-      <input type="hidden" data-time-block-target="editBlockId">
-      <input type="hidden" data-time-block-target="editOriginalHabitId">
-
-      <!-- Change habit -->
-      <p class="text-xs font-black uppercase tracking-widest mb-3">Habit</p>
-      <div class="grid gap-2 mb-6">
-        <% @day.habits.each do |habit| %>
-          <button type="button"
-                  class="nb-btn text-left justify-start habit-card"
-                  style="background: <%= habit.color_css_var %>;"
-                  data-token="<%= habit.color_token %>"
-                  data-action="click->time-block#selectEditHabit"
-                  data-time-block-target="editHabitButton"
-                  data-habit-id="<%= habit.id %>">
-            <span class="inline-block w-3 h-3 border-2 border-black rounded-full mr-2 shrink-0"
-                  style="background: <%= habit.color_css_var %>;"></span>
-            <span class="truncate"><%= habit.name %></span>
-            <span class="ml-auto text-lg hidden" data-checkmark>✓</span>
-          </button>
-        <% end %>
-      </div>
-
-      <!-- Adjust times -->
-      <p class="text-xs font-black uppercase tracking-widest mb-3">Adjust time</p>
-      <div class="flex gap-3 mb-6">
-        <div class="flex-1">
-          <label class="block text-xs font-bold mb-1">Start</label>
-          <select class="nb-input w-full" data-time-block-target="editStartHour" data-action="change->time-block#updateEditTimeDisplay">
-            <% (6..23).each do |h| %>
-              <option value="<%= h %>"><%= format_hour(h) %></option>
-              <option value="<%= h + 0.5 %>"><%= format_hour(h) %>:30</option>
-            <% end %>
-          </select>
-        </div>
-        <div class="flex-1">
-          <label class="block text-xs font-bold mb-1">End</label>
-          <select class="nb-input w-full" data-time-block-target="editEndHour" data-action="change->time-block#updateEditTimeDisplay">
-            <% (6..24).each do |h| %>
-              <% next if h == 6 %>
-              <option value="<%= h %>"><%= h == 24 ? '12am' : format_hour(h) %></option>
-              <% unless h == 24 %>
-                <option value="<%= h + 0.5 %>"><%= format_hour(h) %>:30</option>
-              <% end %>
-            <% end %>
-          </select>
-        </div>
-      </div>
-
-      <!-- Action buttons -->
-      <div class="flex gap-2">
-        <button type="button"
-                class="nb-btn nb-btn--rose flex-1"
-                data-action="click->time-block#confirmDelete">
-          Delete
-        </button>
-        <button type="button"
-                class="nb-btn nb-btn--yellow flex-1"
-                data-action="click->time-block#saveEdit">
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
+  <!-- Turbo Frame for Edit Modal (loaded via link click on time blocks) -->
+  <%= turbo_frame_tag "edit_modal" %>
 </div>
