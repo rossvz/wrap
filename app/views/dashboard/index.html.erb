@@ -1,4 +1,7 @@
 <% content_for :title, "Your Day" %>
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
 <div class="nb-page" data-controller="time-block" data-time-block-date-value="<%= @day.date.to_s %>" data-time-block-hour-height-value="60" data-time-block-start-hour-value="6" data-time-block-end-hour-value="24" >
   <%= render "dashboard/header", day: @day %>
   <!-- Timeline Calendar -->
