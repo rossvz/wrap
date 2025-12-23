@@ -35,6 +35,7 @@ class DaySummary
     END_HOUR - START_HOUR
   end
 
+
   def empty?
     time_blocks.empty?
   end
