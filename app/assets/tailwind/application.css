@@ -140,7 +140,7 @@
     background: var(--bg-card);
     box-shadow: 4px 4px 0 #000;
   }
-  @screen md {
+  @media (min-width: 768px) {
     .nb-page-header {
       box-shadow: 8px 8px 0 #000;
     }
