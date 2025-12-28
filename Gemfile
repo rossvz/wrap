@@ -68,5 +68,5 @@ group :test do
   gem "selenium-webdriver"
 
   # Rails 8.1 test runner is not yet compatible with Minitest 6
-  gem "minitest", "~> 5.0"
+  gem "minitest", "~> 6.0"
 end
