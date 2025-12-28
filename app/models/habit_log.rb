@@ -1,4 +1,6 @@
 class HabitLog < ApplicationRecord
+  include TimeFormatting
+
   belongs_to :habit
 
   validates :logged_on, presence: true
@@ -43,14 +45,5 @@ class HabitLog < ApplicationRecord
     if end_hour <= start_hour
       errors.add(:end_hour, "must be after start hour")
     end
-  end
-
-  def format_hour(hour)
-    return nil unless hour
-    h = hour.to_i
-    m = ((hour % 1) * 60).to_i
-    period = h >= 12 ? "pm" : "am"
-    display_hour = h == 0 ? 12 : (h > 12 ? h - 12 : h)
-    m.zero? ? "#{display_hour}#{period}" : "#{display_hour}:#{m.to_s.rjust(2, '0')}#{period}"
   end
 end
