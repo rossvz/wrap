@@ -2,6 +2,12 @@ class DaySummary
   START_HOUR = 6
   END_HOUR = 24
 
+  TIME_SECTIONS = {
+    6 => { name: "Your Morning", bg: "bg-morning" },
+    12 => { name: "Your Afternoon", bg: "bg-afternoon" },
+    18 => { name: "Your Evening", bg: "bg-evening" }
+  }.freeze
+
   attr_reader :user, :date
 
   def initialize(user, date = Date.current)
@@ -38,5 +44,17 @@ class DaySummary
 
   def empty?
     time_blocks.empty?
+  end
+
+  def time_blocks_for_hour(hour)
+    time_blocks.select { |b| b.start_hour.to_i == hour }
+  end
+
+  def section_for_hour(hour)
+    TIME_SECTIONS[hour]
+  end
+
+  def section_background_for_hour(hour)
+    TIME_SECTIONS.select { |h, _| h <= hour }.max_by { |h, _| h }&.last&.dig(:bg) || "bg-white"
   end
 end

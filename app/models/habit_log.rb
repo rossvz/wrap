@@ -38,6 +38,10 @@ class HabitLog < ApplicationRecord
     "#{formatted_start_time} - #{formatted_end_time}"
   end
 
+  def show_extended_details?
+    duration_hours >= 2
+  end
+
   private
 
   def end_hour_after_start_hour
