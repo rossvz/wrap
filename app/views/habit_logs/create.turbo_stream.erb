@@ -1,4 +1,5 @@
 <%= turbo_stream.replace("flash", partial: "shared/flash", locals: { notice: "Time block logged." }) %>
 <%= turbo_stream.replace("dashboard_header", partial: "dashboard/header", locals: { day: @day }) %>
 <%= turbo_stream.replace("timeline", partial: "dashboard/timeline", locals: { day: @day }) %>
+<%= turbo_stream.replace("habit_selection_modal", partial: "dashboard/habit_selection_modal", locals: { day: @day }) %>
 <%= turbo_stream.replace("edit_modal", "<turbo-frame id=\"edit_modal\"></turbo-frame>") %>

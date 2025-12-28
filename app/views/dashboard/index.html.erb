@@ -7,57 +7,7 @@
   <!-- Timeline Calendar -->
   <%= render "dashboard/timeline", day: @day %>
   <!-- Habit Selection Modal (for creating new time blocks via drag) -->
-  <div data-time-block-target="modal"
-       class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 p-4"
-       data-action="click->time-block#closeModal turbo:submit-end@window->time-block#closeModal">
-    <div class="nb-card w-full max-w-md max-h-[80vh] overflow-y-auto"
-         onclick="event.stopPropagation()">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <p class="text-xs font-black uppercase tracking-widest">New time block</p>
-          <p class="text-2xl font-black mt-1" data-time-display>--</p>
-        </div>
-        <button type="button" class="nb-btn nb-btn--white" data-action="click->time-block#closeModal">
-          ✕
-        </button>
-      </div>
-      <!-- Hidden inputs for form submission -->
-      <input type="hidden" data-time-block-target="startHourInput">
-      <input type="hidden" data-time-block-target="endHourInput">
-      <!-- Existing habits -->
-      <% if @day.habits.any? %>
-        <p class="text-xs font-black uppercase tracking-widest mb-3">Choose a habit</p>
-        <div class="grid gap-2 mb-6">
-          <% @day.habits.each do |habit| %>
-            <button type="button"
-                    class="nb-btn text-left justify-start habit-card"
-                    style="background: <%= habit.color_css_var %>;"
-                    data-token="<%= habit.color_token %>"
-                    data-action="click->time-block#selectHabit"
-              data-habit-id="<%= habit.id %>">
-              <span class="inline-block w-3 h-3 border-2 border-black rounded-full mr-2"
-                    style="background: <%= habit.color_css_var %>;"></span>
-              <%= habit.name %>
-            </button>
-          <% end %>
-        </div>
-      <% end %>
-      <!-- Quick create new habit -->
-      <p class="text-xs font-black uppercase tracking-widest mb-3">Or create new</p>
-      <div class="flex gap-2">
-        <input type="text"
-               class="nb-input flex-1"
-               placeholder="New habit name..."
-               data-time-block-target="newHabitName"
-               data-action="keydown.enter->time-block#createNewHabit">
-        <button type="button"
-                class="nb-btn nb-btn--yellow"
-                data-action="click->time-block#createNewHabit">
-          Create
-        </button>
-      </div>
-    </div>
-  </div>
+  <%= render "dashboard/habit_selection_modal", day: @day %>
   <!-- Turbo Frame for Edit Modal (loaded via link click on time blocks) -->
   <%= turbo_frame_tag "edit_modal" %>
 </div>
