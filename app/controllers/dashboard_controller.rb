@@ -4,7 +4,7 @@ class DashboardController < ApplicationController
   end
 
   def clear_day
-    HabitLog.joins(:habit).where(habits: { user_id: current_user.id }, logged_on: Date.current).destroy_all
+    current_user.clear_habit_logs_for_date(Date.current)
     @day = DaySummary.new(current_user)
 
     respond_to do |format|

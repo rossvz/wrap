@@ -23,4 +23,8 @@ class User < ApplicationRecord
     else "Bold & Colorful"
     end
   end
+
+  def clear_habit_logs_for_date(date)
+    HabitLog.joins(:habit).where(habits: { user_id: id }, logged_on: date).destroy_all
+  end
 end
