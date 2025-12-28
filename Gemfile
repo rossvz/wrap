@@ -67,6 +67,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 
-  # Rails test runner is not yet compatible with Minitest 6
-  gem "minitest", "~> 6.0"
+  # Rails 8.1 test runner is not yet compatible with Minitest 6
+  gem "minitest", "~> 5.0"
 end
