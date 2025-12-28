@@ -16,7 +16,11 @@ class HabitLogsController < ApplicationController
   # POST /habit_logs (standalone route for timeline)
   # POST /habits/:habit_id/logs (nested route)
   def create
-    habit = find_or_create_habit
+    habit = Habit.find_or_create_for_user(
+      current_user,
+      habit_id: params[:habit_id] || params.dig(:habit_log, :habit_id),
+      new_habit_name: params.dig(:habit_log, :new_habit_name)
+    )
 
     unless habit
       redirect_to dashboard_path, alert: "Could not find or create habit."
@@ -73,26 +77,6 @@ class HabitLogsController < ApplicationController
 
   def habit_log_params
     params.expect(habit_log: %i[logged_on start_hour end_hour notes habit_id])
-  end
-
-  def find_or_create_habit
-    # If habit_id is provided directly in params (from nested route or form)
-    if params[:habit_id].present?
-      return current_user.habits.find_by(id: params[:habit_id])
-    end
-
-    # If habit_id is in habit_log params
-    if params[:habit_log][:habit_id].present?
-      return current_user.habits.find_by(id: params[:habit_log][:habit_id])
-    end
-
-    # If new_habit_name is provided, create a new habit
-    if params[:habit_log][:new_habit_name].present?
-      name = params[:habit_log][:new_habit_name].strip
-      return current_user.habits.create(name: name)
-    end
-
-    nil
   end
 
   def redirect_destination

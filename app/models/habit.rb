@@ -11,6 +11,18 @@ class Habit < ApplicationRecord
   # Use before_validation so user association is set when we check for unused tokens
   before_validation :set_defaults, on: :create
 
+  # Find an existing habit or create a new one for the user
+  # Returns nil if no habit_id or new_habit_name provided
+  def self.find_or_create_for_user(user, habit_id:, new_habit_name: nil)
+    return user.habits.find_by(id: habit_id) if habit_id.present?
+
+    if new_habit_name.present?
+      return user.habits.create(name: new_habit_name.strip)
+    end
+
+    nil
+  end
+
   # Find next unused color token for a given scope (e.g., user's habits)
   def self.next_unused_token(scope = all)
     used_tokens = scope.pluck(:color_token)
