@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  endpoint: https://push.example.com/sub/abc123
+  p256dh_key: BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkM=
+  auth_key: tBHItJI5svbpez7KI4CCXg==
+
+two:
+  user: two
+  endpoint: https://push.example.com/sub/def456
+  p256dh_key: BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QTpQtUbVlUls0VJXg7A8u-Ts1XbjhazAkj7I99e8QcYP7DkA=
+  auth_key: tBHItJI5svbpez7KI4CCXh==

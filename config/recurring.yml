@@ -16,3 +16,6 @@ production:
   cleanup_stale_magic_links:
     command: "MagicLink.cleanup"
     schedule: every hour at minute 30
+  send_noon_reminder:
+    class: SendNoonReminderJob
+    schedule: at 12pm every day

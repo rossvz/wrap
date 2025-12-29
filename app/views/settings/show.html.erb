@@ -48,4 +48,30 @@
     <% end %>
   </div>
 
+  <div class="nb-card mt-6"
+       data-controller="push-notifications"
+       data-push-notifications-vapid-public-key-value="<%= ENV['VAPID_PUBLIC_KEY'] %>"
+       data-push-notifications-subscribe-url-value="<%= push_subscriptions_path %>"
+       data-push-notifications-unsubscribe-url-value="<%= push_subscriptions_path %>">
+    <div>
+      <h2 class="text-2xl font-black">Notifications</h2>
+      <p class="mt-1 text-sm text-black/70" data-push-notifications-target="status">
+        Loading notification status...
+      </p>
+    </div>
+
+    <div class="mt-4">
+      <button type="button"
+              class="nb-btn nb-btn--yellow"
+              data-push-notifications-target="button"
+              data-action="click->push-notifications#subscribe">
+        Enable notifications
+      </button>
+    </div>
+
+    <p class="mt-4 text-xs text-black/50">
+      Note: On iOS, you must first add this app to your home screen for notifications to work.
+    </p>
+  </div>
+
 </div>
