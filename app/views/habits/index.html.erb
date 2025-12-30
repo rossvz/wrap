@@ -16,14 +16,7 @@
   <div id="habits" class="grid gap-4">
     <% if @habits.any? %>
       <% @habits.each do |habit| %>
-        <div class="grid gap-2">
-          <%= render habit %>
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <%= link_to "Open", habit_path(habit), class: "nb-btn nb-btn--white" %>
-            <%= link_to "Edit", edit_habit_path(habit), class: "nb-btn nb-btn--white" %>
-            <%= button_to "Delete", habit_path(habit), method: :delete, class: "nb-btn nb-btn--red"  %>
-          </div>
-        </div>
+        <%= render habit %>
       <% end %>
     <% else %>
       <div class="nb-card">
