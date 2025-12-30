@@ -5,6 +5,10 @@
 /* Default theme - bold, colorful and fun */
 :root,
 [data-theme="default"] {
+  --text-color: #000;
+  --ink-color: #000;
+  --shadow-color: #000;
+
   /* UI colors */
   --bg-body: #fff7ed;
   --bg-card: white;
@@ -37,6 +41,10 @@
 
 /* Monochrome Magic theme - elegant grayscale */
 [data-theme="monochrome"] {
+  --text-color: #111827; /* deep gray text for softer contrast */
+  --ink-color: #111827;
+  --shadow-color: #111827;
+
   /* UI colors */
   --bg-body: #f5f5f5;
   --bg-card: white;
@@ -67,6 +75,42 @@
   --habit-color-8: #f3f4f6; /* gray-100 - lightest */
 }
 
+/* Catppuccin Dark theme - moody neobrutalism */
+[data-theme="catppuccin"] {
+  --text-color: #cdd6f4;
+  --ink-color: #f5e0dc;
+  --shadow-color: #050517;
+
+  /* UI colors */
+  --bg-body: #11111b; /* crust */
+  --bg-card: #1e1e2e; /* base */
+  --bg-nav: #181825; /* mantle */
+  --accent-primary: #cba6f7; /* mauve */
+  --accent-cta: #fab387; /* peach */
+  --accent-notice: #a6e3a1; /* green */
+  --accent-alert: #f38ba8; /* red */
+
+  /* Time-of-day section backgrounds */
+  --bg-morning: #1c1c2a;
+  --bg-afternoon: #181825;
+  --bg-evening: #151521;
+
+  /* Stats card colors */
+  --bg-stat-today: #313244; /* surface0 */
+  --bg-stat-week: #45475a; /* surface1 */
+  --bg-stat-alltime: #585b70; /* surface2 */
+
+  /* Habit colors (Catppuccin signature accents) */
+  --habit-color-1: #f38ba8; /* red */
+  --habit-color-2: #fab387; /* peach */
+  --habit-color-3: #f9e2af; /* yellow */
+  --habit-color-4: #a6e3a1; /* green */
+  --habit-color-5: #94e2d5; /* teal */
+  --habit-color-6: #89b4fa; /* blue */
+  --habit-color-7: #cba6f7; /* mauve */
+  --habit-color-8: #f5e0dc; /* rosewater */
+}
+
 /* Text contrast variables per theme */
 :root,
 [data-theme="default"] {
@@ -93,6 +137,18 @@
   --habit-text-8: black;
 }
 
+[data-theme="catppuccin"] {
+  /* Catppuccin accents are bright, so deep navy text keeps contrast */
+  --habit-text-1: #1c1c2b;
+  --habit-text-2: #1c1c2b;
+  --habit-text-3: #1c1c2b;
+  --habit-text-4: #1c1c2b;
+  --habit-text-5: #1c1c2b;
+  --habit-text-6: #1c1c2b;
+  --habit-text-7: #1c1c2b;
+  --habit-text-8: #1c1c2b;
+}
+
 /* Neobrutalist-ish design tokens + components (Tailwind v4 CSS-first) */
 
 @layer base {
@@ -100,9 +156,13 @@
     color-scheme: light;
   }
 
+  html[data-theme="catppuccin"] {
+    color-scheme: dark;
+  }
+
   body {
     background: var(--bg-body);
-    color: #000;
+    color: var(--text-color, #000);
   }
 
   a {
@@ -123,12 +183,14 @@
   .nb-nav {
     @apply border-b-2 border-black;
     background: var(--bg-nav);
+    border-color: var(--ink-color, #000);
   }
 
   .nb-logo {
     @apply grid h-12 w-12 place-items-center border-2 border-black text-lg font-black;
     background: var(--accent-primary);
-    box-shadow: 4px 4px 0 #000;
+    border-color: var(--ink-color, #000);
+    box-shadow: 4px 4px 0 var(--shadow-color, #000);
   }
 
   .nb-page {
@@ -138,23 +200,25 @@
   .nb-page-header {
     @apply flex flex-col gap-3 border-2 border-black py-2 px-4 md:p-6 md:gap-4 sm:flex-row sm:items-end sm:justify-between;
     background: var(--bg-card);
-    box-shadow: 4px 4px 0 #000;
+    border-color: var(--ink-color, #000);
+    box-shadow: 4px 4px 0 var(--shadow-color, #000);
   }
   @media (min-width: 768px) {
     .nb-page-header {
-      box-shadow: 8px 8px 0 #000;
+      box-shadow: 8px 8px 0 var(--shadow-color, #000);
     }
   }
 
   .nb-card {
     @apply border-2 border-black p-6;
     background: var(--bg-card);
-    box-shadow: 8px 8px 0 #000;
+    border-color: var(--ink-color, #000);
+    box-shadow: 8px 8px 0 var(--shadow-color, #000);
   }
 
   .nb-card--tight {
     @apply p-4;
-    box-shadow: 6px 6px 0 #000;
+    box-shadow: 6px 6px 0 var(--shadow-color, #000);
   }
 
   .nb-card--notice {
@@ -172,33 +236,36 @@
   .nb-input {
     @apply w-full border-2 border-black px-3 py-2 font-medium outline-none;
     background: var(--bg-card);
-    box-shadow: 3px 3px 0 #000;
+    border-color: var(--ink-color, #000);
+    box-shadow: 3px 3px 0 var(--shadow-color, #000);
   }
 
   .nb-input:focus {
     transform: translate(-1px, -1px);
-    box-shadow: 5px 5px 0 #000;
+    box-shadow: 5px 5px 0 var(--shadow-color, #000);
   }
 
   .nb-pill {
     @apply inline-flex items-center gap-2 border-2 border-black px-2 py-1 text-xs font-black;
-    box-shadow: 3px 3px 0 #000;
+    border-color: var(--ink-color, #000);
+    box-shadow: 3px 3px 0 var(--shadow-color, #000);
   }
 
   .nb-pill--white {
     background: var(--bg-card);
-    color: black; /* Always black text on white background */
+    color: var(--text-color, black);
   }
 
   .nb-btn {
     @apply inline-flex items-center justify-center gap-2 border-2 border-black px-4 py-2 text-sm font-black transition;
-    box-shadow: 4px 4px 0 #000;
+    border-color: var(--ink-color, #000);
+    box-shadow: 4px 4px 0 var(--shadow-color, #000);
     color: black; /* Default to black text */
   }
 
   .nb-btn:hover {
     transform: translate(-1px, -1px);
-    box-shadow: 6px 6px 0 #000;
+    box-shadow: 6px 6px 0 var(--shadow-color, #000);
   }
 
   .nb-btn--yellow {
@@ -212,7 +279,7 @@
 
   .nb-btn--white {
     background: var(--bg-card);
-    color: black; /* Always black text on white background */
+    color: var(--text-color, black);
   }
 
   .nb-btn--red {

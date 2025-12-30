@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  THEMES = %w[default monochrome].freeze
+  THEMES = %w[default monochrome catppuccin].freeze
 
   has_many :sessions, dependent: :destroy
   has_many :magic_links, dependent: :destroy
@@ -21,6 +21,7 @@ class User < ApplicationRecord
     case theme
     when "default" then "Bold & Colorful"
     when "monochrome" then "Monochrome Magic"
+    when "catppuccin" then "Catppuccin Dark"
     else "Bold & Colorful"
     end
   end

@@ -5,6 +5,7 @@ module ApplicationHelper
     case theme
     when "default" then "Bold & Colorful"
     when "monochrome" then "Monochrome Magic"
+    when "catppuccin" then "Catppuccin Dark"
     else theme.titleize
     end
   end

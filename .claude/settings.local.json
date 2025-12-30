@@ -5,7 +5,8 @@
       "Bash(ruby -e:*)",
       "Bash(RAILS_ENV=test bin/rails runner:*)",
       "Bash(asdf shell:*)",
-      "Bash(bin/rails test:*)"
+      "Bash(bin/rails test:*)",
+      "Bash(kamal deploy:*)"
     ]
   }
 }
