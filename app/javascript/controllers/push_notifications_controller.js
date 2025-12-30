@@ -95,7 +95,7 @@ export default class extends Controller {
       }
     } catch (error) {
       console.error("Push subscription error:", error)
-      this.statusTarget.textContent = "An error occurred. Please try again."
+      this.statusTarget.textContent = `Error: ${error.message || error}`
     } finally {
       this.buttonTarget.disabled = false
     }
