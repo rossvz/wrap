@@ -21,4 +21,14 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     get dashboard_url
     assert_redirected_to new_session_url
   end
+
+  test "dashboard respects timezone cookie" do
+    travel_to Time.utc(2025, 12, 30, 1, 0, 0) do
+      cookies[:timezone] = "America/Los_Angeles"
+      get dashboard_url
+
+      assert_response :success
+      assert_includes @response.body, "December 29, 2025"
+    end
+  end
 end
