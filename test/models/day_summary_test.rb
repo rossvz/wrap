@@ -13,7 +13,7 @@ class DaySummaryTest < ActiveSupport::TestCase
     user = users(:one)
     summary = DaySummary.new(user)
 
-    assert_equal Date.current, summary.date
+    assert_equal Time.zone.today, summary.date
   end
 
   test "returns active habits for user" do

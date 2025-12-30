@@ -5,7 +5,7 @@ class HabitLogsController < ApplicationController
   # GET /habits/:habit_id/logs
   def index
     @habit_logs = @habit.habit_logs.most_recent_first
-    @habit_log = @habit.habit_logs.new(logged_on: Date.current, start_hour: 9, end_hour: 10)
+    @habit_log = @habit.habit_logs.new(logged_on: current_date, start_hour: 9, end_hour: 10)
   end
 
   # GET /habits/:habit_id/logs/:id/edit
@@ -28,7 +28,7 @@ class HabitLogsController < ApplicationController
     end
 
     @habit_log = habit.habit_logs.create!(habit_log_params)
-    @day = DaySummary.new(current_user, Date.current)
+    @day = DaySummary.new(current_user, current_date)
 
     respond_to do |format|
       format.turbo_stream
@@ -46,7 +46,7 @@ class HabitLogsController < ApplicationController
 
      @habit_log.update!(habit_log_params)
 
-     @day = DaySummary.new(current_user, Date.current)
+     @day = DaySummary.new(current_user, current_date)
 
      respond_to do |format|
         format.turbo_stream
@@ -57,7 +57,7 @@ class HabitLogsController < ApplicationController
   # DELETE /habits/:habit_id/logs/:id
   def destroy
     @habit_log.destroy!
-    @day = DaySummary.new(current_user, Date.current)
+    @day = DaySummary.new(current_user, current_date)
 
     respond_to do |format|
       format.turbo_stream

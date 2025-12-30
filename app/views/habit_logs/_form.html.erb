@@ -15,7 +15,7 @@
     <%= form_with(model: [habit, habit_log], class: "mt-6 grid gap-4 md:grid-cols-12") do |form| %>
       <div class="md:col-span-3">
         <%= form.label :logged_on, class: "nb-label" %>
-        <%= form.date_field :logged_on, class: "nb-input mt-2", value: habit_log.logged_on || Date.current %>
+        <%= form.date_field :logged_on, class: "nb-input mt-2", value: habit_log.logged_on || current_date %>
       </div>
 
       <div class="md:col-span-2">

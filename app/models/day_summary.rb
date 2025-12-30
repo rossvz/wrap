@@ -10,7 +10,7 @@ class DaySummary
 
   attr_reader :user, :date
 
-  def initialize(user, date = Date.current)
+  def initialize(user, date = Time.zone.today)
     @user = user
     @date = date
   end
