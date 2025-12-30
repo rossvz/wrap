@@ -1,8 +1,14 @@
 // Service worker for Wrap - handles push notifications
 
 self.addEventListener("push", async (event) => {
-  const { title, options } = await event.data.json()
-  event.waitUntil(self.registration.showNotification(title, options))
+  try {
+    const data = await event.data.json()
+    const title = data.title
+    const options = data.options || {}
+    event.waitUntil(self.registration.showNotification(title, options))
+  } catch (error) {
+    console.error("Push notification error:", error)
+  }
 })
 
 self.addEventListener("notificationclick", function(event) {

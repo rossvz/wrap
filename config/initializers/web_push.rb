@@ -6,9 +6,6 @@
 # Store these in your environment:
 #   VAPID_PUBLIC_KEY  - shared with browser for subscription
 #   VAPID_PRIVATE_KEY - kept secret on server for signing
-Rails.application.config.to_prepare do
-  WebPush.configure do |config|
-    config.vapid_public_key = ENV.fetch("VAPID_PUBLIC_KEY", nil)
-    config.vapid_private_key = ENV.fetch("VAPID_PRIVATE_KEY", nil)
-  end
-end
+
+# No global configuration needed for web-push 3.x
+# VAPID keys are passed directly to WebPush.payload_send

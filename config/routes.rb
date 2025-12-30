@@ -25,7 +25,11 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Push notification subscriptions
-  resources :push_subscriptions, only: [ :create, :destroy ]
+  resources :push_subscriptions, only: [ :create, :destroy ] do
+    collection do
+      post :test
+    end
+  end
 
   # Render dynamic PWA files from app/views/pwa/*
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

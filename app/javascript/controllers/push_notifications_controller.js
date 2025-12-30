@@ -2,11 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 
 // Manages push notification subscription/unsubscription
 export default class extends Controller {
-  static targets = ["status", "button"]
+  static targets = ["status", "button", "testButton"]
   static values = {
     vapidPublicKey: String,
     subscribeUrl: String,
-    unsubscribeUrl: String
+    unsubscribeUrl: String,
+    testUrl: String
   }
 
   async connect() {
@@ -35,10 +36,16 @@ export default class extends Controller {
       this.statusTarget.textContent = "Notifications enabled. You'll receive a reminder at noon."
       this.buttonTarget.textContent = "Disable notifications"
       this.buttonTarget.dataset.action = "click->push-notifications#unsubscribe"
+      if (this.hasTestButtonTarget) {
+        this.testButtonTarget.classList.remove("hidden")
+      }
     } else {
       this.statusTarget.textContent = "Get a daily reminder at noon to log your habits."
       this.buttonTarget.textContent = "Enable notifications"
       this.buttonTarget.dataset.action = "click->push-notifications#subscribe"
+      if (this.hasTestButtonTarget) {
+        this.testButtonTarget.classList.add("hidden")
+      }
     }
   }
 
@@ -123,6 +130,27 @@ export default class extends Controller {
       this.statusTarget.textContent = "An error occurred. Please try again."
     } finally {
       this.buttonTarget.disabled = false
+    }
+  }
+
+  async test() {
+    try {
+      this.testButtonTarget.disabled = true
+      this.testButtonTarget.textContent = "Sending..."
+
+      await fetch(this.testUrlValue, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+        }
+      })
+
+      this.testButtonTarget.textContent = "Test notification"
+    } catch (error) {
+      console.error("Test notification error:", error)
+    } finally {
+      this.testButtonTarget.disabled = false
     }
   }
 

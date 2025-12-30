@@ -52,7 +52,8 @@
        data-controller="push-notifications"
        data-push-notifications-vapid-public-key-value="<%= ENV['VAPID_PUBLIC_KEY'] %>"
        data-push-notifications-subscribe-url-value="<%= push_subscriptions_path %>"
-       data-push-notifications-unsubscribe-url-value="<%= push_subscriptions_path %>">
+       data-push-notifications-unsubscribe-url-value="<%= push_subscriptions_path %>"
+       data-push-notifications-test-url-value="<%= test_push_subscriptions_path %>">
     <div>
       <h2 class="text-2xl font-black">Notifications</h2>
       <p class="mt-1 text-sm text-black/70" data-push-notifications-target="status">
@@ -60,12 +61,18 @@
       </p>
     </div>
 
-    <div class="mt-4">
+    <div class="mt-4 flex flex-wrap gap-2">
       <button type="button"
               class="nb-btn nb-btn--yellow"
               data-push-notifications-target="button"
               data-action="click->push-notifications#subscribe">
         Enable notifications
+      </button>
+      <button type="button"
+              class="nb-btn nb-btn--white hidden"
+              data-push-notifications-target="testButton"
+              data-action="click->push-notifications#test">
+        Test notification
       </button>
     </div>
 
