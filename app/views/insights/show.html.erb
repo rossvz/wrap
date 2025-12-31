@@ -3,17 +3,17 @@
     <h1 class="text-2xl font-black">Insights</h1>
 
     <div class="flex items-center gap-2">
-      <%= link_to insights_path(week: @week_start - 1.week), class: "nb-btn nb-btn--white" do %>
+      <%= link_to insights_path(week: @week.previous_week_start), class: "nb-btn nb-btn--white" do %>
         <span class="hidden sm:inline">&larr; Prev</span>
         <span class="sm:hidden">&larr;</span>
       <% end %>
 
       <span class="px-2 sm:px-4 py-2 font-bold text-sm sm:text-base">
-        <%= @week_start.strftime("%b %-d") %> &ndash; <%= @week_end.strftime("%b %-d, %Y") %>
+        <%= @week.week_start.strftime("%b %-d") %> &ndash; <%= @week.week_end.strftime("%b %-d, %Y") %>
       </span>
 
-      <% if @week_start < Date.current.beginning_of_week(:monday) %>
-        <%= link_to insights_path(week: @week_start + 1.week), class: "nb-btn nb-btn--white" do %>
+      <% unless @week.current_week? %>
+        <%= link_to insights_path(week: @week.next_week_start), class: "nb-btn nb-btn--white" do %>
           <span class="hidden sm:inline">Next &rarr;</span>
           <span class="sm:hidden">&rarr;</span>
         <% end %>
@@ -28,33 +28,16 @@
 
   <div class="nb-card text-center mt-6">
     <span class="nb-label">This Week</span>
-    <div class="text-5xl font-black"><%= @total_hours %></div>
+    <div class="text-5xl font-black"><%= @week.total_hours %></div>
     <div class="text-sm text-gray-600">hours logged</div>
   </div>
 
-  <%
-    days = (@week_start..@week_end).to_a
-    labels = days.map { |d| d.strftime("%a") }
-    data = days.map { |d| (@hours_by_day[d] || 0).round(1) }
-
-    chart_data = {
-      labels: labels,
-      datasets: [{
-        label: "Hours",
-        data: data,
-        backgroundColor: "var(--accent-primary)",
-        borderColor: "#000",
-        borderWidth: 2
-      }]
-    }
-  %>
-
   <div class="nb-card mt-6">
     <h2 class="nb-label mb-4">Hours by Day</h2>
-    <% if @total_hours > 0 %>
+    <% unless @week.empty? %>
       <div class="relative h-64"
            data-controller="chart"
-           data-chart-data-value="<%= chart_data.to_json %>">
+           data-chart-data-value="<%= @week.chart_data.to_json %>">
         <canvas data-chart-target="canvas"></canvas>
       </div>
     <% else %>
