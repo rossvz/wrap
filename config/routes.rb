@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   get "dashboard" => "dashboard#index"
   delete "dashboard/clear_day" => "dashboard#clear_day", as: :clear_day
 
+  # Insights
+  get "insights" => "insights#show"
+
   # User settings
   resource :settings, only: [ :show, :update ]
 

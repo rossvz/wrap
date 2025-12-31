@@ -1,0 +1,49 @@
+<div class="nb-page">
+  <div class="nb-page-header flex items-center justify-between">
+    <h1 class="text-2xl font-black">Insights</h1>
+
+    <div class="flex items-center gap-2">
+      <%= link_to insights_path(week: @week.previous_week_start), class: "nb-btn nb-btn--white" do %>
+        <span class="hidden sm:inline">&larr; Prev</span>
+        <span class="sm:hidden">&larr;</span>
+      <% end %>
+
+      <span class="px-2 sm:px-4 py-2 font-bold text-sm sm:text-base">
+        <%= @week.week_start.strftime("%b %-d") %> &ndash; <%= @week.week_end.strftime("%b %-d, %Y") %>
+      </span>
+
+      <% unless @week.current_week? %>
+        <%= link_to insights_path(week: @week.next_week_start), class: "nb-btn nb-btn--white" do %>
+          <span class="hidden sm:inline">Next &rarr;</span>
+          <span class="sm:hidden">&rarr;</span>
+        <% end %>
+      <% else %>
+        <span class="nb-btn nb-btn--white opacity-50 cursor-not-allowed">
+          <span class="hidden sm:inline">Next &rarr;</span>
+          <span class="sm:hidden">&rarr;</span>
+        </span>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="nb-card text-center mt-6">
+    <span class="nb-label">This Week</span>
+    <div class="text-5xl font-black"><%= @week.total_hours %></div>
+    <div class="text-sm text-gray-600">hours logged</div>
+  </div>
+
+  <div class="nb-card mt-6">
+    <h2 class="nb-label mb-4">Hours by Day</h2>
+    <% unless @week.empty? %>
+      <div class="relative h-64"
+           data-controller="chart"
+           data-chart-data-value="<%= @week.chart_data.to_json %>">
+        <canvas data-chart-target="canvas"></canvas>
+      </div>
+    <% else %>
+      <div class="h-64 flex items-center justify-center text-gray-400">
+        No data this week
+      </div>
+    <% end %>
+  </div>
+</div>
