@@ -1,11 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
-import Chart from "chart.js/auto"
 
 export default class extends Controller {
   static targets = ["canvas"]
   static values = { data: Object }
 
-  connect() {
+  async connect() {
+    const { Chart } = await import("chart.js/auto")
+
     this.chart = new Chart(this.canvasTarget, {
       type: "bar",
       data: this.dataValue,
