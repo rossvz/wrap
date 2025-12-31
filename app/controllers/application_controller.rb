@@ -34,6 +34,9 @@ class ApplicationController < ActionController::Base
     return unless zone_name && Current.session
 
     Current.session.update_column(:time_zone, zone_name) if Current.session.time_zone != zone_name
+
+    user = Current.session.user
+    user.update_column(:time_zone, zone_name) if user && user.time_zone != zone_name
   end
 
   def resolved_time_zone

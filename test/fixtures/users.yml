@@ -4,8 +4,10 @@ one:
   email_address: user_one@example.com
   name: User One
   theme: default
+  time_zone: America/New_York
 
 two:
   email_address: user_two@example.com
   name: User Two
   theme: monochrome
+  time_zone: America/Los_Angeles
