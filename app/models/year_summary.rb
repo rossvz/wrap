@@ -1,31 +1,23 @@
-class WeekSummary
+class YearSummary
   include StreakCalculator
 
-  attr_reader :user, :week_start
+  attr_reader :user, :year_start
 
   def initialize(user, date = nil)
     @user = user
-    @week_start = (date || Date.current).beginning_of_week(:monday)
+    @year_start = (date || Date.current).beginning_of_year
   end
 
-  def week_end
-    @week_end ||= week_start.end_of_week(:monday)
+  def year_end
+    @year_end ||= year_start.end_of_year
   end
 
   def date_range
-    week_start..week_end
-  end
-
-  def hours_by_day
-    @hours_by_day ||= HabitLog.joins(:habit)
-                              .where(habits: { user_id: user.id })
-                              .where(logged_on: date_range)
-                              .group(:logged_on)
-                              .sum("end_hour - start_hour")
+    year_start..year_end
   end
 
   def total_hours
-    @total_hours ||= hours_by_day.values.sum.round(1)
+    @total_hours ||= habit_logs.sum("end_hour - start_hour").round(1)
   end
 
   def daily_average
@@ -35,6 +27,14 @@ class WeekSummary
 
   def active_days_count
     @active_days_count ||= habit_logs.distinct.count(:logged_on)
+  end
+
+  def hours_by_month
+    @hours_by_month ||= HabitLog.joins(:habit)
+                                .where(habits: { user_id: user.id })
+                                .where(logged_on: date_range)
+                                .group("strftime('%Y-%m', logged_on)")
+                                .sum("end_hour - start_hour")
   end
 
   def hours_by_habit
@@ -57,10 +57,10 @@ class WeekSummary
 
   def chart_data
     {
-      labels: days.map { |d| d.strftime("%a") },
+      labels: months.map { |m| m.strftime("%b") },
       datasets: [ {
         label: "Hours",
-        data: days.map { |d| (hours_by_day[d] || 0).round(1) },
+        data: months.map { |m| hours_for_month(m) },
         backgroundColor: "var(--accent-primary)",
         borderColor: "#000",
         borderWidth: 2
@@ -81,20 +81,16 @@ class WeekSummary
     }
   end
 
-  def previous_week_start
-    week_start - 1.week
+  def previous_year
+    year_start - 1.year
   end
 
-  def next_week_start
-    week_start + 1.week
+  def next_year
+    year_start + 1.year
   end
 
   def can_navigate_next?
-    next_week_start.beginning_of_week(:monday) <= Date.current.beginning_of_week(:monday)
-  end
-
-  def current_week?
-    week_start >= Date.current.beginning_of_week(:monday)
+    next_year.beginning_of_year <= Date.current.beginning_of_year
   end
 
   private
@@ -105,7 +101,12 @@ class WeekSummary
             .where(logged_on: date_range)
   end
 
-  def days
-    date_range.to_a
+  def months
+    @months ||= (0..11).map { |i| year_start + i.months }
+  end
+
+  def hours_for_month(month)
+    key = month.strftime("%Y-%m")
+    (hours_by_month[key] || 0).round(1)
   end
 end

@@ -1,31 +1,23 @@
-class WeekSummary
+class MonthSummary
   include StreakCalculator
 
-  attr_reader :user, :week_start
+  attr_reader :user, :month_start
 
   def initialize(user, date = nil)
     @user = user
-    @week_start = (date || Date.current).beginning_of_week(:monday)
+    @month_start = (date || Date.current).beginning_of_month
   end
 
-  def week_end
-    @week_end ||= week_start.end_of_week(:monday)
+  def month_end
+    @month_end ||= month_start.end_of_month
   end
 
   def date_range
-    week_start..week_end
-  end
-
-  def hours_by_day
-    @hours_by_day ||= HabitLog.joins(:habit)
-                              .where(habits: { user_id: user.id })
-                              .where(logged_on: date_range)
-                              .group(:logged_on)
-                              .sum("end_hour - start_hour")
+    month_start..month_end
   end
 
   def total_hours
-    @total_hours ||= hours_by_day.values.sum.round(1)
+    @total_hours ||= habit_logs.sum("end_hour - start_hour").round(1)
   end
 
   def daily_average
@@ -35,6 +27,14 @@ class WeekSummary
 
   def active_days_count
     @active_days_count ||= habit_logs.distinct.count(:logged_on)
+  end
+
+  def hours_by_day
+    @hours_by_day ||= HabitLog.joins(:habit)
+                              .where(habits: { user_id: user.id })
+                              .where(logged_on: date_range)
+                              .group(:logged_on)
+                              .sum("end_hour - start_hour")
   end
 
   def hours_by_habit
@@ -57,7 +57,7 @@ class WeekSummary
 
   def chart_data
     {
-      labels: days.map { |d| d.strftime("%a") },
+      labels: days.map { |d| d.day.to_s },
       datasets: [ {
         label: "Hours",
         data: days.map { |d| (hours_by_day[d] || 0).round(1) },
@@ -81,20 +81,16 @@ class WeekSummary
     }
   end
 
-  def previous_week_start
-    week_start - 1.week
+  def previous_month
+    month_start - 1.month
   end
 
-  def next_week_start
-    week_start + 1.week
+  def next_month
+    month_start + 1.month
   end
 
   def can_navigate_next?
-    next_week_start.beginning_of_week(:monday) <= Date.current.beginning_of_week(:monday)
-  end
-
-  def current_week?
-    week_start >= Date.current.beginning_of_week(:monday)
+    next_month.beginning_of_month <= Date.current.beginning_of_month
   end
 
   private
@@ -106,6 +102,6 @@ class WeekSummary
   end
 
   def days
-    date_range.to_a
+    @days ||= date_range.to_a
   end
 end
