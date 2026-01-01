@@ -56,13 +56,14 @@ class YearSummary
   end
 
   def chart_data
+    bar_colors = (1..8).map { |i| "var(--habit-color-#{i})" }
     {
       labels: months.map { |m| m.strftime("%b") },
       datasets: [ {
         label: "Hours",
         data: months.map { |m| hours_for_month(m) },
-        backgroundColor: "var(--accent-primary)",
-        borderColor: "#000",
+        backgroundColor: months.map.with_index { |_, i| bar_colors[i % bar_colors.size] },
+        borderColor: "var(--ink-color)",
         borderWidth: 2
       } ]
     }
@@ -75,7 +76,7 @@ class YearSummary
       datasets: [ {
         data: habits.map { |h| h[:hours] },
         backgroundColor: habits.map { |h| "var(--habit-color-#{h[:color_token]})" },
-        borderColor: "#000",
+        borderColor: "var(--ink-color)",
         borderWidth: 2
       } ]
     }

@@ -56,13 +56,14 @@ class WeekSummary
   end
 
   def chart_data
+    bar_colors = (1..8).map { |i| "var(--habit-color-#{i})" }
     {
       labels: days.map { |d| d.strftime("%a") },
       datasets: [ {
         label: "Hours",
         data: days.map { |d| (hours_by_day[d] || 0).round(1) },
-        backgroundColor: "var(--accent-primary)",
-        borderColor: "#000",
+        backgroundColor: days.map.with_index { |_, i| bar_colors[i % bar_colors.size] },
+        borderColor: "var(--ink-color)",
         borderWidth: 2
       } ]
     }
@@ -75,7 +76,7 @@ class WeekSummary
       datasets: [ {
         data: habits.map { |h| h[:hours] },
         backgroundColor: habits.map { |h| "var(--habit-color-#{h[:color_token]})" },
-        borderColor: "#000",
+        borderColor: "var(--ink-color)",
         borderWidth: 2
       } ]
     }

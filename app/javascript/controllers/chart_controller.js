@@ -19,9 +19,34 @@ export default class extends Controller {
 
     this.#chart = new Chart(this.canvasTarget, {
       type: this.typeValue,
-      data: this.dataValue,
+      data: this.#resolveColors(this.dataValue),
       options: this.chartOptions
     })
+  }
+
+  #resolveColors(data) {
+    const styles = getComputedStyle(document.documentElement)
+    const resolveVar = (value) => {
+      if (typeof value !== "string") return value
+      const match = value.match(/var\(--([^)]+)\)/)
+      if (match) {
+        return styles.getPropertyValue(`--${match[1]}`).trim() || value
+      }
+      return value
+    }
+
+    return {
+      ...data,
+      datasets: data.datasets.map(dataset => ({
+        ...dataset,
+        backgroundColor: Array.isArray(dataset.backgroundColor)
+          ? dataset.backgroundColor.map(resolveVar)
+          : resolveVar(dataset.backgroundColor),
+        borderColor: Array.isArray(dataset.borderColor)
+          ? dataset.borderColor.map(resolveVar)
+          : resolveVar(dataset.borderColor)
+      }))
+    }
   }
 
   disconnect() {
@@ -34,7 +59,7 @@ export default class extends Controller {
 
   dataValueChanged() {
     if (this.#chart && this.element.isConnected) {
-      this.#chart.data = this.dataValue
+      this.#chart.data = this.#resolveColors(this.dataValue)
       this.#chart.update("none")
     }
   }
