@@ -19,7 +19,13 @@ jobs:
           bundler-cache: true
 
       - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager --no-exit-on-info
+        run: |
+          bin/brakeman --no-pager; exit_code=$?
+          if [ $exit_code -eq 5 ]; then
+            echo "Brakeman version check warning (exit 5), ignoring"
+            exit 0
+          fi
+          exit $exit_code
       
       - name: Scan for known security vulnerabilities in gems used
         run: bin/bundler-audit
