@@ -19,8 +19,10 @@ jobs:
           bundler-cache: true
 
       - name: Scan for common Rails security vulnerabilities using static analysis
+        shell: bash {0}
         run: |
-          bin/brakeman --no-pager; exit_code=$?
+          bin/brakeman --no-pager
+          exit_code=$?
           if [ $exit_code -eq 5 ]; then
             echo "Brakeman version check warning (exit 5), ignoring"
             exit 0
