@@ -305,6 +305,21 @@
     color: black; /* Always black text */
   }
 
+  .nb-checkbox-label {
+    @apply flex items-center gap-2 p-3 border-2 rounded cursor-pointer transition-colors;
+    border-color: var(--ink-color, #000);
+    background: var(--bg-card);
+  }
+
+  .nb-checkbox-label:hover {
+    background: color-mix(in srgb, var(--accent-cta) 20%, var(--bg-card));
+  }
+
+  .nb-checkbox {
+    @apply w-5 h-5;
+    accent-color: var(--accent-cta);
+  }
+
   /* Timeline styles */
   .timeline-container {
     -webkit-overflow-scrolling: touch;
