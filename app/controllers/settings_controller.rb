@@ -13,6 +13,6 @@ class SettingsController < ApplicationController
   private
 
   def settings_params
-    params.expect(user: [ :theme, notification_hours: [] ])
+    params.require(:user).permit(:theme, notification_hours: [])
   end
 end
