@@ -4,6 +4,11 @@ class InsightsController < ApplicationController
   def show
     @period_type = validated_period_type
     @summary = build_summary
+
+    respond_to do |format|
+      format.html
+      format.json
+    end
   end
 
   private

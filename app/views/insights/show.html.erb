@@ -25,41 +25,24 @@
       <div class="text-3xl font-black"><%= @summary.active_days_count %></div>
     </div>
     <div class="nb-card text-center">
-      <span class="nb-label">Current Streak</span>
-      <div class="text-3xl font-black"><%= @summary.current_streak %></div>
+      <span class="nb-label">Longest Streak</span>
+      <div class="text-3xl font-black"><%= @summary.longest_streak %></div>
     </div>
   </div>
 
   <div class="flex justify-between items-center mt-6">
-    <% previous_date = case @period_type
-                       when "week" then @summary.previous_week_start
-                       when "month" then @summary.previous_month
-                       when "year" then @summary.previous_year
-                       end %>
-    <%= link_to insights_path(period: @period_type, date: previous_date),
+    <%= link_to insights_path(period: @period_type, date: @summary.previous_period_date),
         class: "nb-btn nb-btn--white" do %>
       <span class="hidden sm:inline">&larr; Prev</span>
       <span class="sm:hidden">&larr;</span>
     <% end %>
 
     <span class="px-2 sm:px-4 py-2 font-bold text-sm sm:text-base">
-      <%= case @period_type
-          when "week"
-            "#{@summary.week_start.strftime('%b %-d')} – #{@summary.week_end.strftime('%b %-d, %Y')}"
-          when "month"
-            @summary.month_start.strftime('%B %Y')
-          when "year"
-            @summary.year_start.year.to_s
-          end %>
+      <%= @summary.period_label %>
     </span>
 
     <% if @summary.can_navigate_next? %>
-      <% next_date = case @period_type
-                     when "week" then @summary.next_week_start
-                     when "month" then @summary.next_month
-                     when "year" then @summary.next_year
-                     end %>
-      <%= link_to insights_path(period: @period_type, date: next_date),
+      <%= link_to insights_path(period: @period_type, date: @summary.next_period_date),
           class: "nb-btn nb-btn--white" do %>
         <span class="hidden sm:inline">Next &rarr;</span>
         <span class="sm:hidden">&rarr;</span>
@@ -74,9 +57,7 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
     <div class="nb-card">
-      <h2 class="nb-label mb-4">
-        <%= @period_type == "year" ? "Hours by Month" : "Hours by Day" %>
-      </h2>
+      <h2 class="nb-label mb-4"><%= @summary.chart_title %></h2>
       <% unless @summary.empty? %>
         <div class="relative h-64"
              data-controller="chart"

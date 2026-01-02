@@ -1,7 +1,8 @@
 class YearSummary
   include StreakCalculator
+  include SummaryCalculations
 
-  attr_reader :user, :year_start
+  attr_reader :year_start
 
   def initialize(user, date = nil)
     @user = user
@@ -16,66 +17,20 @@ class YearSummary
     year_start..year_end
   end
 
-  def total_hours
-    @total_hours ||= habit_logs.sum("end_hour - start_hour").round(1)
-  end
-
-  def daily_average
-    return 0.0 if active_days_count.zero?
-    (total_hours / active_days_count.to_f).round(1)
-  end
-
-  def active_days_count
-    @active_days_count ||= habit_logs.distinct.count(:logged_on)
-  end
-
   def hours_by_month
-    @hours_by_month ||= HabitLog.joins(:habit)
-                                .where(habits: { user_id: user.id })
-                                .where(logged_on: date_range)
-                                .group("strftime('%Y-%m', logged_on)")
-                                .sum("end_hour - start_hour")
-  end
-
-  def hours_by_habit
-    @hours_by_habit ||= HabitLog
-      .joins(:habit)
-      .where(habits: { user_id: user.id, active: true })
-      .where(logged_on: date_range)
-      .group("habits.id", "habits.name", "habits.color_token")
-      .sum("end_hour - start_hour")
-      .map { |(id, name, color_token), hours|
-        { habit_id: id, name: name, color_token: color_token, hours: hours.round(1) }
-      }
-      .select { |h| h[:hours] > 0 }
-      .sort_by { |h| -h[:hours] }
-  end
-
-  def empty?
-    total_hours.zero?
+    @hours_by_month ||= habit_logs
+                          .select(:logged_on, Arel.sql("end_hour - start_hour AS duration"))
+                          .group_by { |log| log.logged_on.strftime("%Y-%m") }
+                          .transform_values { |logs| logs.sum { |l| l[:duration] } }
   end
 
   def chart_data
-    bar_colors = (1..8).map { |i| "var(--habit-color-#{i})" }
     {
       labels: months.map { |m| m.strftime("%b") },
       datasets: [ {
         label: "Hours",
         data: months.map { |m| hours_for_month(m) },
         backgroundColor: months.map.with_index { |_, i| bar_colors[i % bar_colors.size] },
-        borderColor: "var(--ink-color)",
-        borderWidth: 2
-      } ]
-    }
-  end
-
-  def doughnut_chart_data
-    habits = hours_by_habit
-    {
-      labels: habits.map { |h| h[:name] },
-      datasets: [ {
-        data: habits.map { |h| h[:hours] },
-        backgroundColor: habits.map { |h| "var(--habit-color-#{h[:color_token]})" },
         borderColor: "var(--ink-color)",
         borderWidth: 2
       } ]
@@ -94,13 +49,23 @@ class YearSummary
     next_year.beginning_of_year <= Date.current.beginning_of_year
   end
 
-  private
-
-  def habit_logs
-    HabitLog.joins(:habit)
-            .where(habits: { user_id: user.id })
-            .where(logged_on: date_range)
+  def previous_period_date
+    previous_year
   end
+
+  def next_period_date
+    next_year
+  end
+
+  def period_label
+    year_start.year.to_s
+  end
+
+  def chart_title
+    "Hours by Month"
+  end
+
+  private
 
   def months
     @months ||= (0..11).map { |i| year_start + i.months }
