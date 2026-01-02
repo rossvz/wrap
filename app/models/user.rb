@@ -6,8 +6,12 @@ class User < ApplicationRecord
   has_many :habits, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
 
+  serialize :notification_hours, coder: JSON
+
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :theme, inclusion: { in: THEMES }
+  validates :notification_hours, length: { maximum: 6, message: "can have at most 6 notification times" }
+  validate :notification_hours_in_valid_range
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 
@@ -28,5 +32,18 @@ class User < ApplicationRecord
 
   def clear_habit_logs_for_date(date)
     HabitLog.joins(:habit).where(habits: { user_id: id }, logged_on: date).destroy_all
+  end
+
+  def effective_timezone
+    time_zone.presence || "UTC"
+  end
+
+  private
+
+  def notification_hours_in_valid_range
+    return if notification_hours.blank?
+    unless notification_hours.all? { |h| h.is_a?(Integer) && h.between?(0, 23) }
+      errors.add(:notification_hours, "must be valid hours (0-23)")
+    end
   end
 end
