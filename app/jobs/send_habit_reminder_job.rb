@@ -29,7 +29,7 @@ class SendHabitReminderJob < ApplicationJob
         body: "Time to log your habits!",
         path: "/"
       )
-    rescue WebPush::Error, Net::OpenTimeout, Net::ReadTimeout, SocketError, Errno::ECONNREFUSED => e
+    rescue WebPush::Error, Net::OpenTimeout, Net::ReadTimeout, SocketError, Errno::ECONNREFUSED, KeyError => e
       Rails.logger.error "Push failed for subscription #{subscription.id}: #{e.message}"
     end
   end
