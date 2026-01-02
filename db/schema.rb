@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_31_224646) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_01_012759) do
   create_table "habit_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "end_hour", precision: 3, scale: 1
@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_31_224646) do
     t.datetime "updated_at", null: false
     t.index ["habit_id", "logged_on"], name: "index_habit_logs_on_habit_id_and_logged_on"
     t.index ["habit_id"], name: "index_habit_logs_on_habit_id"
+    t.index ["logged_on", "habit_id"], name: "index_habit_logs_on_logged_on_and_habit_id"
   end
 
   create_table "habits", force: :cascade do |t|

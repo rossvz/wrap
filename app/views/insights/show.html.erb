@@ -1,49 +1,122 @@
 <div class="nb-page">
-  <div class="nb-page-header flex items-center justify-between">
+  <div class="nb-page-header flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <h1 class="text-2xl font-black">Insights</h1>
+    <div class="flex gap-2">
+      <%= link_to "Week", insights_path(period: "week"),
+          class: "nb-btn #{@period_type == 'week' ? 'nb-btn--accent' : 'nb-btn--white'}" %>
+      <%= link_to "Month", insights_path(period: "month"),
+          class: "nb-btn #{@period_type == 'month' ? 'nb-btn--accent' : 'nb-btn--white'}" %>
+      <%= link_to "Year", insights_path(period: "year"),
+          class: "nb-btn #{@period_type == 'year' ? 'nb-btn--accent' : 'nb-btn--white'}" %>
+    </div>
+  </div>
 
-    <div class="flex items-center gap-2">
-      <%= link_to insights_path(week: @week.previous_week_start), class: "nb-btn nb-btn--white" do %>
-        <span class="hidden sm:inline">&larr; Prev</span>
-        <span class="sm:hidden">&larr;</span>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+    <div class="nb-card text-center">
+      <span class="nb-label">Total Hours</span>
+      <div class="text-3xl font-black"><%= @summary.total_hours %></div>
+    </div>
+    <div class="nb-card text-center">
+      <span class="nb-label">Daily Avg</span>
+      <div class="text-3xl font-black"><%= @summary.daily_average %></div>
+    </div>
+    <div class="nb-card text-center">
+      <span class="nb-label">Active Days</span>
+      <div class="text-3xl font-black"><%= @summary.active_days_count %></div>
+    </div>
+    <div class="nb-card text-center">
+      <span class="nb-label">Longest Streak</span>
+      <div class="text-3xl font-black"><%= @summary.longest_streak %></div>
+    </div>
+  </div>
+
+  <div class="flex justify-between items-center mt-6">
+    <%= link_to insights_path(period: @period_type, date: @summary.previous_period_date),
+        class: "nb-btn nb-btn--white" do %>
+      <span class="hidden sm:inline">&larr; Prev</span>
+      <span class="sm:hidden">&larr;</span>
+    <% end %>
+
+    <span class="px-2 sm:px-4 py-2 font-bold text-sm sm:text-base">
+      <%= @summary.period_label %>
+    </span>
+
+    <% if @summary.can_navigate_next? %>
+      <%= link_to insights_path(period: @period_type, date: @summary.next_period_date),
+          class: "nb-btn nb-btn--white" do %>
+        <span class="hidden sm:inline">Next &rarr;</span>
+        <span class="sm:hidden">&rarr;</span>
       <% end %>
-
-      <span class="px-2 sm:px-4 py-2 font-bold text-sm sm:text-base">
-        <%= @week.week_start.strftime("%b %-d") %> &ndash; <%= @week.week_end.strftime("%b %-d, %Y") %>
+    <% else %>
+      <span class="nb-btn nb-btn--white opacity-50 cursor-not-allowed">
+        <span class="hidden sm:inline">Next &rarr;</span>
+        <span class="sm:hidden">&rarr;</span>
       </span>
+    <% end %>
+  </div>
 
-      <% unless @week.current_week? %>
-        <%= link_to insights_path(week: @week.next_week_start), class: "nb-btn nb-btn--white" do %>
-          <span class="hidden sm:inline">Next &rarr;</span>
-          <span class="sm:hidden">&rarr;</span>
-        <% end %>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+    <div class="nb-card">
+      <h2 class="nb-label mb-4"><%= @summary.chart_title %></h2>
+      <% unless @summary.empty? %>
+        <div class="relative h-64"
+             data-controller="chart"
+             data-chart-type-value="bar"
+             data-chart-data-value="<%= @summary.chart_data.to_json %>">
+          <canvas data-chart-target="canvas"></canvas>
+        </div>
       <% else %>
-        <span class="nb-btn nb-btn--white opacity-50 cursor-not-allowed">
-          <span class="hidden sm:inline">Next &rarr;</span>
-          <span class="sm:hidden">&rarr;</span>
-        </span>
+        <div class="h-64 flex items-center justify-center text-gray-400">
+          No data this <%= @period_type %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="nb-card">
+      <h2 class="nb-label mb-4">Time by Habit</h2>
+      <% if @summary.hours_by_habit.any? %>
+        <div class="relative h-64"
+             data-controller="chart"
+             data-chart-type-value="doughnut"
+             data-chart-data-value="<%= @summary.doughnut_chart_data.to_json %>">
+          <canvas data-chart-target="canvas"></canvas>
+        </div>
+      <% else %>
+        <div class="h-64 flex items-center justify-center text-gray-400">
+          No habits logged this <%= @period_type %>
+        </div>
       <% end %>
     </div>
   </div>
 
-  <div class="nb-card text-center mt-6">
-    <span class="nb-label">This Week</span>
-    <div class="text-5xl font-black"><%= @week.total_hours %></div>
-    <div class="text-sm text-gray-600">hours logged</div>
-  </div>
-
   <div class="nb-card mt-6">
-    <h2 class="nb-label mb-4">Hours by Day</h2>
-    <% unless @week.empty? %>
-      <div class="relative h-64"
-           data-controller="chart"
-           data-chart-data-value="<%= @week.chart_data.to_json %>">
-        <canvas data-chart-target="canvas"></canvas>
+    <h2 class="nb-label mb-4">Habit Breakdown</h2>
+    <% if @summary.hours_by_habit.any? %>
+      <div class="space-y-3">
+        <% @summary.hours_by_habit.each do |item| %>
+          <div class="flex items-center gap-4">
+            <div class="w-4 h-4 rounded border-2 border-black flex-shrink-0"
+                 style="background: var(--habit-color-<%= item[:color_token] %>)"></div>
+            <span class="font-bold flex-1"><%= item[:name] %></span>
+            <span class="font-mono"><%= item[:hours] %>h</span>
+          </div>
+        <% end %>
       </div>
     <% else %>
-      <div class="h-64 flex items-center justify-center text-gray-400">
-        No data this week
-      </div>
+      <p class="text-gray-400">No habits logged this <%= @period_type %></p>
     <% end %>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4 mt-6">
+    <div class="nb-card text-center">
+      <span class="nb-label">Current Streak</span>
+      <div class="text-4xl font-black"><%= @summary.current_streak %></div>
+      <div class="text-sm text-gray-600">days</div>
+    </div>
+    <div class="nb-card text-center">
+      <span class="nb-label">Longest Streak</span>
+      <div class="text-4xl font-black"><%= @summary.longest_streak %></div>
+      <div class="text-sm text-gray-600">days</div>
+    </div>
   </div>
 </div>

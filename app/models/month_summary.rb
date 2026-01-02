@@ -1,25 +1,25 @@
-class WeekSummary
+class MonthSummary
   include StreakCalculator
   include SummaryCalculations
 
-  attr_reader :week_start
+  attr_reader :month_start
 
   def initialize(user, date = nil)
     @user = user
-    @week_start = (date || Date.current).beginning_of_week(:monday)
+    @month_start = (date || Date.current).beginning_of_month
   end
 
-  def week_end
-    @week_end ||= week_start.end_of_week(:monday)
+  def month_end
+    @month_end ||= month_start.end_of_month
   end
 
   def date_range
-    week_start..week_end
+    month_start..month_end
   end
 
   def chart_data
     {
-      labels: days.map { |d| d.strftime("%a") },
+      labels: days.map { |d| d.day.to_s },
       datasets: [ {
         label: "Hours",
         data: days.map { |d| (hours_by_day[d] || 0).round(1) },
@@ -30,28 +30,28 @@ class WeekSummary
     }
   end
 
-  def previous_week_start
-    week_start - 1.week
+  def previous_month
+    month_start - 1.month
   end
 
-  def next_week_start
-    week_start + 1.week
+  def next_month
+    month_start + 1.month
   end
 
   def can_navigate_next?
-    next_week_start.beginning_of_week(:monday) <= Date.current.beginning_of_week(:monday)
+    next_month.beginning_of_month <= Date.current.beginning_of_month
   end
 
   def previous_period_date
-    previous_week_start
+    previous_month
   end
 
   def next_period_date
-    next_week_start
+    next_month
   end
 
   def period_label
-    "#{week_start.strftime('%b %-d')} – #{week_end.strftime('%b %-d, %Y')}"
+    month_start.strftime("%B %Y")
   end
 
   def chart_title
