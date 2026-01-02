@@ -5,9 +5,11 @@ one:
   name: User One
   theme: default
   time_zone: America/New_York
+  notification_hours: "[12]"
 
 two:
   email_address: user_two@example.com
   name: User Two
   theme: monochrome
   time_zone: America/Los_Angeles
+  notification_hours: "[]"
