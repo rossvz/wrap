@@ -1,0 +1,9 @@
+<% if @user_tags.any? %>
+  <%= form_with url: root_path, method: :get, data: { turbo_frame: "_top" }, class: "mb-4" do %>
+    <label for="tag" class="nb-label">Filter by tag</label>
+    <%= select_tag :tag,
+                   options_for_select([["All habits", nil]] + @user_tags.map { |t| [t.name, t.name] }, @tag_filter),
+                   class: "nb-input mt-2",
+                   onchange: "this.form.requestSubmit()" %>
+  <% end %>
+<% end %>

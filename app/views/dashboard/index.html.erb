@@ -4,6 +4,7 @@
 <% end %>
 <div class="nb-page" data-controller="time-block" data-time-block-date-value="<%= @day.date.to_s %>" data-time-block-hour-height-value="60" data-time-block-start-hour-value="6" data-time-block-end-hour-value="24" >
   <%= render "dashboard/header", day: @day %>
+  <%= render "dashboard/tag_filter" %>
   <!-- Timeline Calendar -->
   <%= render "dashboard/timeline", day: @day %>
   <!-- Habit Selection Modal (for creating new time blocks via drag) -->

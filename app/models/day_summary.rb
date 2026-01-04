@@ -8,15 +8,20 @@ class DaySummary
     18 => { name: "Your Evening", bg: "bg-evening" }
   }.freeze
 
-  attr_reader :user, :date
+  attr_reader :user, :date, :tag_filter
 
-  def initialize(user, date = Time.zone.today)
+  def initialize(user, date = Time.zone.today, tag_filter: nil)
     @user = user
     @date = date
+    @tag_filter = tag_filter
   end
 
   def habits
-    @habits ||= user.habits.where(active: true).order(created_at: :asc)
+    @habits ||= begin
+      scope = user.habits.where(active: true)
+      scope = scope.with_tag(@tag_filter) if @tag_filter.present?
+      scope.order(created_at: :asc)
+    end
   end
 
   def time_blocks

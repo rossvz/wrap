@@ -21,6 +21,8 @@
     <%= form.textarea :description, rows: 4, class: "nb-input mt-2", placeholder: "Why it matters, what counts…" %>
   </div>
 
+  <%= render "habits/tag_input", form: form, habit: habit %>
+
   <div class="mt-4 grid gap-4 md:grid-cols-12" data-controller="color-picker">
     <div class="md:col-span-6">
       <%= form.label :color_token, "Card color", class: "nb-label" %>

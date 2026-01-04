@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_many :magic_links, dependent: :destroy
   has_many :habits, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
+  has_many :tags, dependent: :destroy
 
   serialize :notification_hours, coder: JSON
 

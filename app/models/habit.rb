@@ -4,9 +4,19 @@ class Habit < ApplicationRecord
 
   belongs_to :user, optional: true
   has_many :habit_logs, dependent: :destroy
+  has_many :taggings, dependent: :destroy
+  has_many :tags, through: :taggings
 
   validates :name, presence: true
   validates :color_token, presence: true, inclusion: { in: COLOR_TOKENS }
+
+  scope :with_tag, ->(tag_name) {
+    joins(:tags).where(tags: { name: tag_name.downcase }).distinct
+  }
+
+  scope :with_any_tags, ->(tag_names) {
+    joins(:tags).where(tags: { name: tag_names.map(&:downcase) }).distinct
+  }
 
   # Use before_validation so user association is set when we check for unused tokens
   before_validation :set_defaults, on: :create
