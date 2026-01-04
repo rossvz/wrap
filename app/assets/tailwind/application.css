@@ -30,7 +30,7 @@
   --bg-stat-week: #bfdbfe; /* blue-200 */
   --bg-stat-alltime: #fde68a; /* amber-200 */
 
-  /* Habit colors (8 vibrant options) */
+  /* Habit colors (12 vibrant options) */
   --habit-color-1: #fde047; /* yellow-300 */
   --habit-color-2: #bef264; /* lime-300 */
   --habit-color-3: #fda4af; /* rose-300 */
@@ -39,6 +39,10 @@
   --habit-color-6: #6ee7b7; /* emerald-300 */
   --habit-color-7: #fdba74; /* orange-300 */
   --habit-color-8: #c4b5fd; /* violet-300 */
+  --habit-color-9: #67e8f9; /* cyan-300 */
+  --habit-color-10: #fca5a5; /* red-300 */
+  --habit-color-11: #5eead4; /* teal-300 */
+  --habit-color-12: #fcd34d; /* amber-300 */
 }
 
 /* Monochrome Magic theme - elegant grayscale */
@@ -68,7 +72,7 @@
   --bg-stat-week: #d1d5db; /* gray-300 */
   --bg-stat-alltime: #f3f4f6; /* gray-100 */
 
-  /* Habit colors (8 graduated grays with good contrast) */
+  /* Habit colors (12 graduated grays with good contrast) */
   --habit-color-1: #1f2937; /* gray-800 - darkest */
   --habit-color-2: #374151; /* gray-700 */
   --habit-color-3: #4b5563; /* gray-600 */
@@ -77,6 +81,10 @@
   --habit-color-6: #d1d5db; /* gray-300 */
   --habit-color-7: #e5e7eb; /* gray-200 */
   --habit-color-8: #f3f4f6; /* gray-100 - lightest */
+  --habit-color-9: #111827; /* gray-900 - deeper */
+  --habit-color-10: #5a6578; /* gray-550 */
+  --habit-color-11: #b3bbc8; /* gray-350 */
+  --habit-color-12: #f9fafb; /* gray-50 - near white */
 }
 
 /* Catppuccin Dark theme - moody neobrutalism */
@@ -125,6 +133,10 @@
   --habit-color-6: #89b4fa; /* blue */
   --habit-color-7: #cba6f7; /* mauve */
   --habit-color-8: #f5e0dc; /* rosewater */
+  --habit-color-9: #89dceb; /* sky */
+  --habit-color-10: #f5c2e7; /* pink */
+  --habit-color-11: #b4befe; /* lavender */
+  --habit-color-12: #eba0ac; /* maroon */
 }
 
 /* Text contrast variables per theme */
@@ -139,10 +151,14 @@
   --habit-text-6: black;
   --habit-text-7: black;
   --habit-text-8: black;
+  --habit-text-9: black;
+  --habit-text-10: black;
+  --habit-text-11: black;
+  --habit-text-12: black;
 }
 
 [data-theme="monochrome"] {
-  /* Monochrome theme: dark colors (1-4) need white text, light colors (5-8) need black text */
+  /* Monochrome theme: dark colors (1-4, 9-10) need white text, light colors (5-8, 11-12) need black text */
   --habit-text-1: white;
   --habit-text-2: white;
   --habit-text-3: white;
@@ -151,6 +167,10 @@
   --habit-text-6: black;
   --habit-text-7: black;
   --habit-text-8: black;
+  --habit-text-9: white;
+  --habit-text-10: white;
+  --habit-text-11: black;
+  --habit-text-12: black;
 }
 
 [data-theme="catppuccin"] {
@@ -163,6 +183,10 @@
   --habit-text-6: #1c1c2b;
   --habit-text-7: #1c1c2b;
   --habit-text-8: #1c1c2b;
+  --habit-text-9: #1c1c2b;
+  --habit-text-10: #1c1c2b;
+  --habit-text-11: #1c1c2b;
+  --habit-text-12: #1c1c2b;
 }
 
 /* Neobrutalist-ish design tokens + components (Tailwind v4 CSS-first) */
@@ -447,6 +471,22 @@
     background: var(--habit-color-8);
     color: var(--habit-text-8);
   }
+  .habit-bg-9 {
+    background: var(--habit-color-9);
+    color: var(--habit-text-9);
+  }
+  .habit-bg-10 {
+    background: var(--habit-color-10);
+    color: var(--habit-text-10);
+  }
+  .habit-bg-11 {
+    background: var(--habit-color-11);
+    color: var(--habit-text-11);
+  }
+  .habit-bg-12 {
+    background: var(--habit-color-12);
+    color: var(--habit-text-12);
+  }
 
   /* Habit text contrast via data-token attribute (for elements using inline background styles) */
   [data-token="1"] {
@@ -472,6 +512,18 @@
   }
   [data-token="8"] {
     color: var(--habit-text-8);
+  }
+  [data-token="9"] {
+    color: var(--habit-text-9);
+  }
+  [data-token="10"] {
+    color: var(--habit-text-10);
+  }
+  [data-token="11"] {
+    color: var(--habit-text-11);
+  }
+  [data-token="12"] {
+    color: var(--habit-text-12);
   }
 }
 

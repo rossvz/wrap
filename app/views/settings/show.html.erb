@@ -32,8 +32,8 @@
         <div>
           <p class="nb-label">Preview</p>
           <div class="mt-2 grid grid-cols-4 gap-2">
-            <% (1..8).each do |token| %>
-              <div class="h-10 border-2 border-black habit-bg-<%= token %>" 
+            <% Habit::COLOR_TOKENS.each do |token| %>
+              <div class="h-8 border-2 border-black habit-bg-<%= token %>"
                    style="box-shadow: 2px 2px 0 #000;"
                    title="Color <%= token %>"></div>
             <% end %>

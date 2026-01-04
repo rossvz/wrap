@@ -1,6 +1,6 @@
 class Habit < ApplicationRecord
-  # Available color tokens (1-8)
-  COLOR_TOKENS = (1..8).to_a.freeze
+  # Available color tokens (1-12)
+  COLOR_TOKENS = (1..12).to_a.freeze
 
   belongs_to :user, optional: true
   has_many :habit_logs, dependent: :destroy

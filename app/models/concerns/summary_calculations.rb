@@ -66,6 +66,6 @@ module SummaryCalculations
   end
 
   def bar_colors
-    @bar_colors ||= (1..8).map { |i| "var(--habit-color-#{i})" }
+    @bar_colors ||= Habit::COLOR_TOKENS.map { |i| "var(--habit-color-#{i})" }
   end
 end
