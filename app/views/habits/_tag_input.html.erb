@@ -1,4 +1,4 @@
-<div class="mt-4" data-controller="tag-input">
+<div class="mt-4" data-controller="tag-input" data-tag-input-habit-id-value="<%= habit.id %>">
   <%= form.label :tag_ids, "Tags", class: "nb-label" %>
 
   <div class="mt-2 flex flex-wrap gap-2" data-tag-input-target="container">
@@ -10,7 +10,8 @@
              style="box-shadow: 2px 2px 0 var(--shadow-color, #000)">
         <%= check_box_tag "habit[tag_ids][]", tag.id,
                           @habit_tag_ids.include?(tag.id),
-                          class: "sr-only" %>
+                          class: "sr-only",
+                          data: { action: "change->tag-input#toggle" } %>
         <span class="text-sm font-bold"><%= tag.name %></span>
       </label>
     <% end %>
@@ -29,5 +30,5 @@
     </button>
   </div>
 
-  <p class="mt-2 text-xs text-gray-500">Select existing tags or create new ones.</p>
+  <p class="mt-2 text-xs text-gray-500">Tags save automatically when toggled.</p>
 </div>
