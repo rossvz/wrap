@@ -35,9 +35,8 @@ class SendHabitReminderJob < ApplicationJob
     block_start = previous_notification_hour(user.notification_hours, current_hour)
     today = user_time.to_date
 
-    HabitLog.joins(:habit)
-            .where(habits: { user_id: user.id })
-            .where(logged_on: today)
+    HabitLog.for_user(user)
+            .for_date(today)
             .where("end_hour > ? AND start_hour < ?", block_start, current_hour)
             .exists?
   end
