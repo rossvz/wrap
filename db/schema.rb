@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_02_184555) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_04_233108) do
   create_table "habit_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "end_hour", precision: 3, scale: 1
@@ -69,6 +69,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_184555) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "taggings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "habit_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["habit_id", "tag_id"], name: "index_taggings_on_habit_id_and_tag_id", unique: true
+    t.index ["habit_id"], name: "index_taggings_on_habit_id"
+    t.index ["tag_id"], name: "index_taggings_on_tag_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "taggings_count", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["name"], name: "index_tags_on_name"
+    t.index ["user_id", "name"], name: "index_tags_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_tags_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
@@ -85,4 +106,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_184555) do
   add_foreign_key "magic_links", "users"
   add_foreign_key "push_subscriptions", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "taggings", "habits", on_delete: :cascade
+  add_foreign_key "taggings", "tags", on_delete: :cascade
+  add_foreign_key "tags", "users", on_delete: :cascade
 end

@@ -2,11 +2,21 @@ class Habit < ApplicationRecord
   # Available color tokens (1-8)
   COLOR_TOKENS = (1..8).to_a.freeze
 
-  belongs_to :user, optional: true
+  belongs_to :user, optional: true, inverse_of: :habits
   has_many :habit_logs, dependent: :destroy
+  has_many :taggings, dependent: :destroy, inverse_of: :habit
+  has_many :tags, through: :taggings
 
   validates :name, presence: true
   validates :color_token, presence: true, inclusion: { in: COLOR_TOKENS }
+
+  scope :with_tag, ->(tag_name) {
+    joins(:tags).where(tags: { name: tag_name.downcase }).distinct
+  }
+
+  scope :with_any_tags, ->(tag_names) {
+    joins(:tags).where(tags: { name: tag_names.map(&:downcase) }).distinct
+  }
 
   # Use before_validation so user association is set when we check for unused tokens
   before_validation :set_defaults, on: :create
@@ -69,5 +79,15 @@ class Habit < ApplicationRecord
 
   def total_hours
     habit_logs.sum(&:duration_hours)
+  end
+
+  def add_tags_by_names(names, user)
+    Array(names).each do |name|
+      cleaned = name.to_s.strip.downcase
+      next if cleaned.blank? || cleaned.length > 30
+
+      tag = user.tags.find_or_create_by(name: cleaned)
+      tags << tag unless tags.include?(tag)
+    end
   end
 end

@@ -1,6 +1,8 @@
 class DashboardController < ApplicationController
   def index
-    @day = DaySummary.new(current_user, current_date)
+    @tag_filter = params[:tag]
+    @day = DaySummary.new(current_user, current_date, tag_filter: @tag_filter)
+    @user_tags = current_user.tags.by_popularity.limit(10)
   end
 
   def clear_day

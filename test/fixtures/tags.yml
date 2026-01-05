@@ -1,0 +1,14 @@
+health:
+  user: one
+  name: health
+  taggings_count: 1
+
+productivity:
+  user: one
+  name: productivity
+  taggings_count: 0
+
+fitness:
+  user: two
+  name: fitness
+  taggings_count: 0

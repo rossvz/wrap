@@ -1,0 +1,35 @@
+<% persisted = habit.persisted? %>
+<div class="mt-4" data-controller="tag-input" data-tag-input-habit-id-value="<%= habit.id %>" data-tag-input-persisted-value="<%= persisted %>">
+  <%= form.label :tag_ids, "Tags", class: "nb-label" %>
+
+  <div class="mt-2 flex flex-wrap gap-2" data-tag-input-target="container">
+    <% current_user.tags.alphabetically.each do |tag| %>
+      <label class="inline-flex items-center gap-2 px-3 py-2 min-h-[44px]
+                    border-2 border-black cursor-pointer touch-manipulation
+                    has-[:checked]:bg-gray-200 has-[:checked]:ring-2 has-[:checked]:ring-black
+                    hover:bg-gray-50 transition-colors"
+             style="box-shadow: 2px 2px 0 var(--shadow-color, #000)">
+        <%= check_box_tag "habit[tag_ids][]", tag.id,
+                          @habit_tag_ids.include?(tag.id),
+                          class: "sr-only",
+                          data: persisted ? { action: "change->tag-input#toggle" } : {} %>
+        <span class="text-sm font-bold"><%= tag.name %></span>
+      </label>
+    <% end %>
+  </div>
+
+  <div class="mt-3 flex gap-2">
+    <%= text_field_tag "new_tag_name", "",
+                       placeholder: "New tag name...",
+                       maxlength: 30,
+                       class: "nb-input flex-1",
+                       data: { tag_input_target: "input", action: "keydown->tag-input#handleKeydown" } %>
+    <button type="button"
+            data-action="click->tag-input#add"
+            class="nb-btn nb-btn--white">
+      Add
+    </button>
+  </div>
+
+  <p class="mt-2 text-xs text-gray-500"><%= persisted ? "Tags save automatically." : "Tags will be saved with the habit." %></p>
+</div>

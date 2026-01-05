@@ -16,15 +16,18 @@ class HabitsController < ApplicationController
   # GET /habits/new
   def new
     @habit = current_user.habits.new
+    @habit_tag_ids = Set.new
   end
 
   # GET /habits/1/edit
   def edit
+    @habit_tag_ids = @habit.tag_ids.to_set
   end
 
   # POST /habits or /habits.json
   def create
     @habit = current_user.habits.new(habit_params)
+    create_new_tags_from_params
 
     respond_to do |format|
       if @habit.save
@@ -39,6 +42,7 @@ class HabitsController < ApplicationController
 
   # PATCH/PUT /habits/1 or /habits/1.json
   def update
+    create_new_tags_from_params
     respond_to do |format|
       if @habit.update(habit_params)
         format.html { redirect_to @habit, notice: "Habit was successfully updated.", status: :see_other }
@@ -66,8 +70,17 @@ class HabitsController < ApplicationController
       @habit = current_user.habits.find(params.expect(:id))
     end
 
-    # Only allow a list of trusted parameters through.
     def habit_params
-      params.expect(habit: [ :name, :description, :color_token, :active ])
+      permitted = params.expect(habit: [ :name, :description, :color_token, :active, tag_ids: [] ])
+      if permitted[:tag_ids].present?
+        permitted[:tag_ids] = current_user.tags.where(id: permitted[:tag_ids]).pluck(:id)
+      end
+      permitted
+    end
+
+    def create_new_tags_from_params
+      return unless params[:new_tags].present?
+
+      @habit.add_tags_by_names(params[:new_tags], current_user)
     end
 end
