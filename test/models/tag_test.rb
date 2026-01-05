@@ -53,30 +53,4 @@ class TagTest < ActiveSupport::TestCase
     tags = user.tags.by_popularity
     assert tags.first.taggings_count >= tags.last.taggings_count
   end
-
-  test "matching scope finds tags starting with query" do
-    user = users(:one)
-    Tag.create!(user: user, name: "workout")
-    Tag.create!(user: user, name: "work")
-    Tag.create!(user: user, name: "reading")
-
-    matches = user.tags.matching("wor")
-    assert_equal 2, matches.count
-    matches.each { |t| assert t.name.start_with?("wor") }
-  end
-
-  test "matching scope handles blank query" do
-    user = users(:one)
-    assert_empty user.tags.matching("")
-    assert_empty user.tags.matching(nil)
-  end
-
-  test "matching scope escapes SQL wildcards" do
-    user = users(:one)
-    Tag.create!(user: user, name: "test-underscore")
-    Tag.create!(user: user, name: "testing")
-
-    matches = user.tags.matching("test_")
-    assert_empty matches
-  end
 end

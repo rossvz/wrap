@@ -1,6 +1,6 @@
 class Tag < ApplicationRecord
-  belongs_to :user
-  has_many :taggings, dependent: :destroy
+  belongs_to :user, inverse_of: :tags
+  has_many :taggings, dependent: :destroy, inverse_of: :tag
   has_many :habits, through: :taggings
 
   validates :name, presence: true,
@@ -13,9 +13,4 @@ class Tag < ApplicationRecord
 
   scope :alphabetically, -> { order(name: :asc) }
   scope :by_popularity, -> { order(taggings_count: :desc) }
-  scope :matching, ->(query) {
-    return none if query.blank?
-    sanitized = query.to_s.first(50).downcase.gsub(/[%_\\]/) { |c| "\\#{c}" }
-    where("name LIKE ?", "#{sanitized}%")
-  }
 end

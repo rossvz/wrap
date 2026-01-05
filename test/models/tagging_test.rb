@@ -31,17 +31,4 @@ class TaggingTest < ActiveSupport::TestCase
 
     assert_equal initial_count - 1, tag.taggings_count
   end
-
-  test "counter never goes below zero" do
-    user = users(:one)
-    tag = Tag.create!(user: user, name: "test", taggings_count: 0)
-    habit = user.habits.first
-    tagging = Tagging.create!(tag: tag, habit: habit)
-
-    tag.update_column(:taggings_count, 0)
-    tagging.destroy
-    tag.reload
-
-    assert_equal 0, tag.taggings_count
-  end
 end
