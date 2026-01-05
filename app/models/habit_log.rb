@@ -12,6 +12,7 @@ class HabitLog < ApplicationRecord
 
   scope :most_recent_first, -> { order(logged_on: :desc, start_hour: :desc) }
   scope :for_date, ->(date) { where(logged_on: date) }
+  scope :for_user, ->(user) { joins(:habit).where(habits: { user_id: user.id }) }
   scope :ordered_by_time, -> { order(start_hour: :asc) }
 
   # Duration in hours (e.g., 2.0 for 2 hours, 1.5 for 1.5 hours)
