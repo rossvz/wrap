@@ -5,7 +5,7 @@ class SendHabitReminderJob < ApplicationJob
 
   def perform
     User.joins(:push_subscriptions)
-        .includes(:push_subscriptions, habits: :habit_logs)
+        .includes(:push_subscriptions)
         .where.not(notification_hours: "[]")
         .distinct
         .each do |user|
@@ -35,12 +35,11 @@ class SendHabitReminderJob < ApplicationJob
     block_start = previous_notification_hour(user.notification_hours, current_hour)
     today = user_time.to_date
 
-    user.habits.any? do |habit|
-      habit.habit_logs.for_date(today).any? do |log|
-        # Log overlaps with block if it ends after block start and starts before current hour
-        log.end_hour > block_start && log.start_hour < current_hour
-      end
-    end
+    HabitLog.joins(:habit)
+            .where(habits: { user_id: user.id })
+            .where(logged_on: today)
+            .where("end_hour > ? AND start_hour < ?", block_start, current_hour)
+            .exists?
   end
 
   # Find the previous notification hour before the current one.
