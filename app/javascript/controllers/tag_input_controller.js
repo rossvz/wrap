@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["input", "container"]
-  static values = { habitId: Number }
+  static values = { habitId: Number, persisted: Boolean }
 
   async add() {
     const name = this.inputTarget.value.trim().toLowerCase()
@@ -11,19 +11,36 @@ export default class extends Controller {
 
     this.inputTarget.value = ""
 
-    const response = await fetch(`/habits/${this.habitIdValue}/taggings`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
-      },
-      body: JSON.stringify({ tag_name: name })
-    })
+    if (this.persistedValue) {
+      const response = await fetch(`/habits/${this.habitIdValue}/taggings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector("[name='csrf-token']").content
+        },
+        body: JSON.stringify({ tag_name: name })
+      })
 
-    if (response.ok) {
-      const data = await response.json()
-      this.addTagChip(data.tag.name, data.tag.id, true)
+      if (response.ok) {
+        const data = await response.json()
+        this.addTagChip(data.tag.name, data.tag.id, true)
+      }
+    } else {
+      this.addNewTagForForm(name)
     }
+  }
+
+  addNewTagForForm(name) {
+    const form = this.element.closest("form")
+    if (!form) return
+
+    const hidden = document.createElement("input")
+    hidden.type = "hidden"
+    hidden.name = "new_tags[]"
+    hidden.value = name
+    form.appendChild(hidden)
+
+    this.addTagChip(name, null, true)
   }
 
   async toggle(event) {
@@ -64,10 +81,12 @@ export default class extends Controller {
     const checkbox = document.createElement("input")
     checkbox.type = "checkbox"
     checkbox.name = "habit[tag_ids][]"
-    checkbox.value = tagId
+    checkbox.value = tagId || ""
     checkbox.checked = checked
     checkbox.className = "sr-only"
-    checkbox.dataset.action = "change->tag-input#toggle"
+    if (this.persistedValue && tagId) {
+      checkbox.dataset.action = "change->tag-input#toggle"
+    }
 
     const textSpan = document.createElement("span")
     textSpan.className = "text-sm font-bold"

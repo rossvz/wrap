@@ -1,4 +1,5 @@
-<div class="mt-4" data-controller="tag-input" data-tag-input-habit-id-value="<%= habit.id %>">
+<% persisted = habit.persisted? %>
+<div class="mt-4" data-controller="tag-input" data-tag-input-habit-id-value="<%= habit.id %>" data-tag-input-persisted-value="<%= persisted %>">
   <%= form.label :tag_ids, "Tags", class: "nb-label" %>
 
   <div class="mt-2 flex flex-wrap gap-2" data-tag-input-target="container">
@@ -11,7 +12,7 @@
         <%= check_box_tag "habit[tag_ids][]", tag.id,
                           @habit_tag_ids.include?(tag.id),
                           class: "sr-only",
-                          data: { action: "change->tag-input#toggle" } %>
+                          data: persisted ? { action: "change->tag-input#toggle" } : {} %>
         <span class="text-sm font-bold"><%= tag.name %></span>
       </label>
     <% end %>
@@ -30,5 +31,5 @@
     </button>
   </div>
 
-  <p class="mt-2 text-xs text-gray-500">Tags save automatically when toggled.</p>
+  <p class="mt-2 text-xs text-gray-500"><%= persisted ? "Tags save automatically." : "Tags will be saved with the habit." %></p>
 </div>
