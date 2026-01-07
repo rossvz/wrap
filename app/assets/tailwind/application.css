@@ -405,6 +405,34 @@
     transform: scale(1.2);
   }
 
+  /* Touch hold states for mobile drag - visual feedback during hold-to-drag */
+  .drag-handle.touch-pending {
+    background-color: rgba(0, 0, 0, 0.12);
+  }
+
+  .drag-handle.touch-pending span {
+    animation: pulse-scale 0.2s ease-out forwards;
+  }
+
+  .drag-handle.touch-active {
+    background-color: var(--accent-primary);
+    background-image: none;
+  }
+
+  .drag-handle.touch-active span {
+    transform: scale(1.3);
+    color: black;
+  }
+
+  @keyframes pulse-scale {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.15);
+    }
+  }
+
   /* Hide drag handle on desktop since whole row is draggable */
   @media (min-width: 768px) {
     .drag-handle {

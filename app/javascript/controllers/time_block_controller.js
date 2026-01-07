@@ -16,6 +16,8 @@ export default class extends Controller {
     hourHeight: { type: Number, default: 60 },
     startHour: { type: Number, default: 6 },
     endHour: { type: Number, default: 24 },
+    touchHoldDelay: { type: Number, default: 200 }, // ms to hold before drag activates
+    touchMoveThreshold: { type: Number, default: 10 }, // px movement to cancel hold
   };
 
   // Called once when controller is first instantiated (before targets connect)
@@ -29,11 +31,19 @@ export default class extends Controller {
     this.selectedStartHour = null;
     this.selectedEndHour = null;
 
+    // Touch hold state (for distinguishing scroll from drag on mobile)
+    this.touchHoldTimeout = null;
+    this.touchStartX = null;
+    this.touchStartY = null;
+    this.pendingDragHandle = null;
+
     // Bind event handlers
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleTouchMove = this.handleTouchMove.bind(this);
     this.handleTouchEnd = this.handleTouchEnd.bind(this);
+    this.handleTouchHoldCheck = this.handleTouchHoldCheck.bind(this);
+    this.handleTouchCancelHold = this.handleTouchCancelHold.bind(this);
   }
 
   disconnect() {
@@ -154,28 +164,92 @@ export default class extends Controller {
   }
 
   // Touch events (mobile - only triggered from drag-handle)
+  // Uses a hold delay to distinguish intentional drags from scrolls
   startTouchDrag(event) {
     if (event.target.closest("[data-time-block]")) return;
 
     const dragHandle = event.target.closest(".drag-handle");
     if (!dragHandle) return;
 
-    event.preventDefault();
+    // Don't prevent default yet - let scroll happen until hold is confirmed
+    const touch = event.touches[0];
+    this.touchStartX = touch.clientX;
+    this.touchStartY = touch.clientY;
+    this.pendingDragHandle = dragHandle;
+
+    // Add visual feedback that touch is registered
+    dragHandle.classList.add("touch-pending");
+
+    // Start hold timer - drag only activates after holding
+    this.touchHoldTimeout = setTimeout(() => {
+      this.activateTouchDrag(dragHandle, touch);
+    }, this.touchHoldDelayValue);
+
+    // Listen for movement/end to cancel hold if user scrolls
+    document.addEventListener("touchmove", this.handleTouchHoldCheck, {
+      passive: true,
+    });
+    document.addEventListener("touchend", this.handleTouchCancelHold);
+  }
+
+  // Check if user moved too much during hold period (they're scrolling)
+  handleTouchHoldCheck(event) {
+    if (!this.touchHoldTimeout) return;
 
     const touch = event.touches[0];
+    const deltaX = Math.abs(touch.clientX - this.touchStartX);
+    const deltaY = Math.abs(touch.clientY - this.touchStartY);
+
+    // If moved beyond threshold, cancel the hold - user is scrolling
+    if (deltaX > this.touchMoveThresholdValue || deltaY > this.touchMoveThresholdValue) {
+      this.cancelTouchHold();
+    }
+  }
+
+  // Cancel hold if touch ends before delay completes
+  handleTouchCancelHold() {
+    this.cancelTouchHold();
+  }
+
+  cancelTouchHold() {
+    if (this.touchHoldTimeout) {
+      clearTimeout(this.touchHoldTimeout);
+      this.touchHoldTimeout = null;
+    }
+    if (this.pendingDragHandle) {
+      this.pendingDragHandle.classList.remove("touch-pending");
+      this.pendingDragHandle = null;
+    }
+    document.removeEventListener("touchmove", this.handleTouchHoldCheck);
+    document.removeEventListener("touchend", this.handleTouchCancelHold);
+  }
+
+  // Actually start the drag after hold delay completes
+  activateTouchDrag(dragHandle, initialTouch) {
+    // Clean up hold state
+    this.touchHoldTimeout = null;
+    document.removeEventListener("touchmove", this.handleTouchHoldCheck);
+    document.removeEventListener("touchend", this.handleTouchCancelHold);
+
+    // Visual feedback - drag is now active
+    dragHandle.classList.remove("touch-pending");
+    dragHandle.classList.add("touch-active");
+    this.activeDragHandle = dragHandle;
+
     this.isDragging = true;
 
     const hourFromElement = this.getHourFromElement(dragHandle);
     this.dragStartHour =
       hourFromElement !== null
         ? hourFromElement
-        : this.getHourFromY(touch.clientY);
+        : this.getHourFromY(initialTouch.clientY);
     this.selectedStartHour = this.dragStartHour;
     this.selectedEndHour = this.dragStartHour + 1;
 
     this.showSelection();
     this.updateSelection();
 
+    // Now listen for drag movement with passive: false to prevent scroll
     document.addEventListener("touchmove", this.handleTouchMove, {
       passive: false,
     });
@@ -212,6 +286,12 @@ export default class extends Controller {
     this.cleanupListeners();
     this.isDragging = false;
 
+    // Clean up active drag handle visual state
+    if (this.activeDragHandle) {
+      this.activeDragHandle.classList.remove("touch-active");
+      this.activeDragHandle = null;
+    }
+
     if (this.selectedEndHour - this.selectedStartHour < 1) {
       this.selectedEndHour = this.selectedStartHour + 1;
     }
@@ -224,6 +304,8 @@ export default class extends Controller {
     document.removeEventListener("mouseup", this.handleMouseUp);
     document.removeEventListener("touchmove", this.handleTouchMove);
     document.removeEventListener("touchend", this.handleTouchEnd);
+    // Also clean up any pending touch hold
+    this.cancelTouchHold();
   }
 
   showSelection() {
