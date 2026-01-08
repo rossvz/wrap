@@ -85,4 +85,21 @@ class DaySummary
     return @work_hours_visible if defined?(@work_hours_visible)
     @work_hours_visible = user.work_hours_enabled? && user.work_day?(date)
   end
+
+  # Returns positioning info for work label overlay within a section
+  # Returns nil if no work hours in the section
+  def work_overlay_for_section(section, pixels_per_hour: 60)
+    work_hours = section[:hours].select { |h| work_hour?(h) }
+    return nil if work_hours.empty?
+
+    first_idx = section[:hours].index(work_hours.first)
+    {
+      top: first_idx * pixels_per_hour,
+      height: work_hours.size * pixels_per_hour
+    }
+  end
+
+  def last_work_hour?(hour)
+    work_hour?(hour) && !work_hour?(hour + 1)
+  end
 end

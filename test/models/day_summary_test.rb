@@ -113,5 +113,4 @@ class DaySummaryTest < ActiveSupport::TestCase
     assert_not summary.work_hour?(17) # end hour is exclusive
     assert_not summary.work_hour?(18)
   end
-
 end

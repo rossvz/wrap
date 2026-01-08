@@ -46,49 +46,41 @@ class User < ApplicationRecord
     time_zone.presence || "UTC"
   end
 
+  # Work schedule accessors with type coercion
   def work_hours_enabled?
     ActiveModel::Type::Boolean.new.cast(work_schedule&.dig("work_hours_enabled"))
+  end
+
+  def work_hours_enabled=(value)
+    self.work_schedule = (work_schedule || {}).merge("work_hours_enabled" => value)
   end
 
   def work_start_hour
     (work_schedule&.dig("work_start_hour") || 9.0).to_d
   end
 
+  def work_start_hour=(value)
+    self.work_schedule = (work_schedule || {}).merge("work_start_hour" => value.to_d)
+  end
+
   def work_end_hour
     (work_schedule&.dig("work_end_hour") || 17.0).to_d
+  end
+
+  def work_end_hour=(value)
+    self.work_schedule = (work_schedule || {}).merge("work_end_hour" => value.to_d)
   end
 
   def work_days
     work_schedule&.dig("work_days") || [ 1, 2, 3, 4, 5 ]
   end
 
+  def work_days=(value)
+    self.work_schedule = (work_schedule || {}).merge("work_days" => Array(value).reject(&:blank?).map(&:to_i))
+  end
+
   def work_day?(date)
     work_days.include?(date.wday)
-  end
-
-  def work_hours_enabled=(value)
-    self.work_schedule = work_schedule_hash.merge("work_hours_enabled" => value)
-  end
-
-  def work_start_hour=(value)
-    self.work_schedule = work_schedule_hash.merge("work_start_hour" => value.to_d)
-  end
-
-  def work_end_hour=(value)
-    self.work_schedule = work_schedule_hash.merge("work_end_hour" => value.to_d)
-  end
-
-  def work_days=(value)
-    days = Array(value).reject(&:blank?).map(&:to_i)
-    self.work_schedule = work_schedule_hash.merge("work_days" => days)
-  end
-
-  def work_schedule_hash
-    case work_schedule
-    when Hash then work_schedule
-    when String then work_schedule.blank? ? {} : (JSON.parse(work_schedule) rescue {})
-    else {}
-    end
   end
 
   private
