@@ -81,16 +81,6 @@ class DaySummary
     hour >= user.work_start_hour && hour < user.work_end_hour
   end
 
-  def first_work_hour?(hour)
-    return false unless work_hours_visible?
-    hour == user.work_start_hour.to_i
-  end
-
-  def work_block_hours
-    return 0 unless work_hours_visible?
-    user.work_end_hour - user.work_start_hour
-  end
-
   def work_hours_visible?
     return @work_hours_visible if defined?(@work_hours_visible)
     @work_hours_visible = user.work_hours_enabled? && user.work_day?(date)

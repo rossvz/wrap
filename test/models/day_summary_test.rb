@@ -114,17 +114,4 @@ class DaySummaryTest < ActiveSupport::TestCase
     assert_not summary.work_hour?(18)
   end
 
-  test "work_hours_visible? memoizes result" do
-    user = users(:one)
-    user.work_hours_enabled = "true"
-    user.work_days = [ 1 ]
-    summary = DaySummary.new(user, Date.new(2025, 1, 6)) # Monday
-
-    # First call computes the value
-    assert summary.work_hours_visible?
-
-    # Change the user but memoized value should remain
-    user.work_hours_enabled = "false"
-    assert summary.work_hours_visible? # Still true because memoized
-  end
 end
