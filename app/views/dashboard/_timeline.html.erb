@@ -19,8 +19,8 @@
         </div>
         <!-- Hours in this section -->
         <div class="flex-1 relative">
-          <%# Work label overlay - centered in work block within this section %>
-          <% if (work_overlay = day.work_overlay_for_section(section)) %>
+          <%# Work label overlay - show only in the section containing first work hour %>
+          <% if day.section_with_work_label == section && (work_overlay = day.work_overlay_for_section(section)) %>
             <div class="absolute left-12 right-10 flex items-center justify-center pointer-events-none z-5"
                  style="top: <%= work_overlay[:top] %>px; height: <%= work_overlay[:height] %>px;">
               <span class="text-sm font-black uppercase tracking-widest work-block-text">Work</span>

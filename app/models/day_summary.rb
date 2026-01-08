@@ -102,4 +102,10 @@ class DaySummary
   def last_work_hour?(hour)
     work_hour?(hour) && !work_hour?(hour + 1)
   end
+
+  # Returns the section that contains the first work hour (for showing label only once)
+  def section_with_work_label
+    return nil unless work_hours_visible?
+    sections_with_hours.find { |section| section[:hours].include?(user.work_start_hour.to_i) }
+  end
 end
