@@ -18,7 +18,7 @@
           <p class="text-sm font-black uppercase tracking-widest"><%= section[:name] %></p>
         </div>
       <% end %>
-      <div class="timeline-hour flex border-b border-black/10 <%= section_bg %> relative"
+      <div class="timeline-hour flex border-b border-black/10 <%= section_bg %> <%= 'work-hour-bg' if day.work_hour?(hour) %> relative"
            style="height: 60px;"
            data-hour="<%= hour %>">
         <!-- Time label - scrollable area -->

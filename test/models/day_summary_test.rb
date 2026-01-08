@@ -70,4 +70,61 @@ class DaySummaryTest < ActiveSupport::TestCase
 
     assert_equal 18, summary.total_day_hours
   end
+
+  # Work hours tests
+  test "work_hour? returns false when work hours disabled" do
+    user = users(:one)
+    summary = DaySummary.new(user, Date.new(2025, 1, 6)) # Monday
+
+    assert_not summary.work_hour?(9)
+  end
+
+  test "work_hour? returns false on non-work day" do
+    user = users(:one)
+    user.work_hours_enabled = "true"
+    user.work_days = [ 1, 2, 3, 4, 5 ] # Mon-Fri
+    summary = DaySummary.new(user, Date.new(2025, 1, 5)) # Sunday
+
+    assert_not summary.work_hour?(9)
+  end
+
+  test "work_hour? returns true during work hours on work day" do
+    user = users(:one)
+    user.work_hours_enabled = "true"
+    user.work_start_hour = 9
+    user.work_end_hour = 17
+    user.work_days = [ 1, 2, 3, 4, 5 ]
+    summary = DaySummary.new(user, Date.new(2025, 1, 6)) # Monday
+
+    assert summary.work_hour?(9)
+    assert summary.work_hour?(12)
+    assert summary.work_hour?(16)
+  end
+
+  test "work_hour? returns false outside work hours" do
+    user = users(:one)
+    user.work_hours_enabled = "true"
+    user.work_start_hour = 9
+    user.work_end_hour = 17
+    user.work_days = [ 1, 2, 3, 4, 5 ]
+    summary = DaySummary.new(user, Date.new(2025, 1, 6)) # Monday
+
+    assert_not summary.work_hour?(8)
+    assert_not summary.work_hour?(17) # end hour is exclusive
+    assert_not summary.work_hour?(18)
+  end
+
+  test "work_hours_visible? memoizes result" do
+    user = users(:one)
+    user.work_hours_enabled = "true"
+    user.work_days = [ 1 ]
+    summary = DaySummary.new(user, Date.new(2025, 1, 6)) # Monday
+
+    # First call computes the value
+    assert summary.work_hours_visible?
+
+    # Change the user but memoized value should remain
+    user.work_hours_enabled = "false"
+    assert summary.work_hours_visible? # Still true because memoized
+  end
 end
