@@ -59,6 +59,19 @@ class DaySummary
     TIME_SECTIONS[hour]
   end
 
+  def sections_with_hours
+    TIME_SECTIONS.map do |start_hour, section|
+      next_section_hour = TIME_SECTIONS.keys.select { |h| h > start_hour }.min || END_HOUR
+      {
+        name: section[:name],
+        bg: section[:bg],
+        start_hour: start_hour,
+        end_hour: next_section_hour,
+        hours: (start_hour...next_section_hour).to_a
+      }
+    end
+  end
+
   def section_background_for_hour(hour)
     TIME_SECTIONS.select { |h, _| h <= hour }.max_by { |h, _| h }&.last&.dig(:bg) || "bg-white"
   end
@@ -66,6 +79,16 @@ class DaySummary
   def work_hour?(hour)
     return false unless work_hours_visible?
     hour >= user.work_start_hour && hour < user.work_end_hour
+  end
+
+  def first_work_hour?(hour)
+    return false unless work_hours_visible?
+    hour == user.work_start_hour.to_i
+  end
+
+  def work_block_hours
+    return 0 unless work_hours_visible?
+    user.work_end_hour - user.work_start_hour
   end
 
   def work_hours_visible?
