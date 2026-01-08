@@ -13,6 +13,13 @@ class SettingsController < ApplicationController
   private
 
   def settings_params
-    params.require(:user).permit(:theme, notification_hours: [])
+    params.require(:user).permit(
+      :theme,
+      :work_hours_enabled,
+      :work_start_hour,
+      :work_end_hour,
+      notification_hours: [],
+      work_days: []
+    )
   end
 end

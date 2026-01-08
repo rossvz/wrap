@@ -111,4 +111,64 @@
     <% end %>
   </div>
 
+  <div class="nb-card mt-6">
+    <%= form_with model: current_user, url: settings_path, method: :patch do |form| %>
+      <div class="mb-4">
+        <h2 class="text-2xl font-black">Work Schedule</h2>
+        <p class="mt-1 text-sm text-black/70">
+          Configure your typical work hours to see them on the timeline.
+        </p>
+      </div>
+
+      <div class="mb-4">
+        <label class="nb-checkbox-label cursor-pointer">
+          <%= form.check_box :work_hours_enabled,
+              { checked: current_user.work_hours_enabled? },
+              "true", "false" %>
+          <span class="font-medium">Show work hours on timeline</span>
+        </label>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 mb-4">
+        <div>
+          <%= form.label :work_start_hour, "Start Time", class: "nb-label" %>
+          <%= form.select :work_start_hour,
+              work_hour_options,
+              { selected: current_user.work_start_hour },
+              class: "nb-input mt-2 w-full" %>
+        </div>
+        <div>
+          <%= form.label :work_end_hour, "End Time", class: "nb-label" %>
+          <%= form.select :work_end_hour,
+              work_hour_options,
+              { selected: current_user.work_end_hour },
+              class: "nb-input mt-2 w-full" %>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <p class="nb-label mb-2">Work Days</p>
+        <%= hidden_field_tag "user[work_days][]", "" %>
+        <div class="flex flex-wrap gap-2">
+          <% day_toggle_options.each do |name, value| %>
+            <label class="cursor-pointer">
+              <%= check_box_tag "user[work_days][]", value,
+                  current_user.work_days.include?(value),
+                  id: "work_day_#{value}",
+                  class: "peer sr-only" %>
+              <div class="nb-btn nb-btn--white px-3 py-2 text-sm font-bold
+                          peer-checked:bg-yellow-400 peer-checked:ring-2 peer-checked:ring-black">
+                <%= name %>
+              </div>
+            </label>
+          <% end %>
+        </div>
+      </div>
+
+      <div>
+        <%= form.submit "Save work schedule", class: "nb-btn nb-btn--yellow" %>
+      </div>
+    <% end %>
+  </div>
+
 </div>

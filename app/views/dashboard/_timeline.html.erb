@@ -8,55 +8,70 @@
     </span>
   </div>
   <div class="timeline-container relative" data-time-block-target="timeline">
-    <!-- All hour rows in one continuous grid -->
-    <% (DaySummary::START_HOUR...DaySummary::END_HOUR).each do |hour| %>
-      <% section = day.section_for_hour(hour) %>
-      <% section_bg = day.section_background_for_hour(hour) %>
-      <% if section %>
-        <!-- Section header row -->
-        <div class="sticky top-0 z-30 border-b-2 border-black bg-white/95 backdrop-blur px-4 py-2">
-          <p class="text-sm font-black uppercase tracking-widest"><%= section[:name] %></p>
+    <% day.sections_with_hours.each do |section| %>
+      <!-- Section: <%= section[:name] %> -->
+      <div class="flex">
+        <!-- Rotated section label -->
+        <div class="section-label w-8 shrink-0 <%= section[:bg] %> border-r border-black/20 relative">
+          <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90 whitespace-nowrap text-xs font-black uppercase tracking-widest text-black/40">
+            <%= section[:name] %>
+          </span>
         </div>
-      <% end %>
-      <div class="timeline-hour flex border-b border-black/10 <%= section_bg %> relative"
-           style="height: 60px;"
-           data-hour="<%= hour %>">
-        <!-- Time label - scrollable area -->
-        <div class="w-12 shrink-0 border-r border-black/10 bg-white/50 px-2 py-1">
-          <span class="text-xs font-bold text-black/50"><%= format_hour(hour) %></span>
-        </div>
-        <!-- Main content area - scrollable on mobile, draggable on desktop -->
-        <div class="flex-1 relative hour-content" data-hour="<%= hour %>"
-             data-action="mousedown->time-block#startDrag">
-          <!-- Existing time blocks for this hour -->
-          <% day.time_blocks_for_hour(hour).each do |block| %>
-            <%= link_to edit_habit_habit_log_path(block.habit, block),
-                class: "absolute inset-x-1 z-10 rounded-lg border-2 border-black cursor-pointer transition-transform hover:scale-[1.02] habit-card block",
-                style: "top: 0; height: #{time_block_height(block)}px; background: #{block.habit.color_css_var};",
-                data: { token: block.habit.color_token, time_block: true, turbo_frame: "edit_modal" } do %>
-              <div class="p-2 h-full flex flex-col">
-                <p class="font-black text-sm truncate"><%= block.habit.name %></p>
-                <% if block.show_extended_details? %>
-                  <p class="text-xs opacity-70 mt-1"><%= block.time_range_display %></p>
-                  <% if block.notes.present? %>
-                    <p class="text-xs opacity-50 mt-auto truncate"><%= block.notes %></p>
+        <!-- Hours in this section -->
+        <div class="flex-1 relative">
+          <%# Work label overlay - show only in the section containing first work hour %>
+          <% if day.section_with_work_label == section && (work_overlay = day.work_overlay_for_section(section)) %>
+            <div class="absolute left-12 right-10 flex items-center justify-center pointer-events-none z-5"
+                 style="top: <%= work_overlay[:top] %>px; height: <%= work_overlay[:height] %>px;">
+              <span class="text-sm font-black uppercase tracking-widest work-block-text">Work</span>
+            </div>
+          <% end %>
+          <% section[:hours].each do |hour| %>
+            <% is_work_hour = day.work_hour?(hour) %>
+            <% is_last_work_hour = day.last_work_hour?(hour) %>
+            <% is_last_hour_in_section = hour == section[:hours].last %>
+            <div class="timeline-hour flex <%= is_work_hour && !is_last_work_hour ? '' : (is_last_hour_in_section ? '' : 'border-b border-black/10') %> <%= section[:bg] %> <%= 'work-hour-bg' if is_work_hour %> relative"
+                 style="height: 60px;"
+                 data-hour="<%= hour %>">
+              <!-- Time label -->
+              <div class="w-12 shrink-0 border-r border-black/10 bg-white/50 px-2 py-1">
+                <span class="text-xs font-bold text-black/50"><%= format_hour(hour) %></span>
+              </div>
+              <!-- Main content area - draggable -->
+              <div class="flex-1 relative hour-content" data-hour="<%= hour %>"
+                   data-action="mousedown->time-block#startDrag">
+                <!-- Existing time blocks for this hour -->
+                <% day.time_blocks_for_hour(hour).each do |block| %>
+                  <%= link_to edit_habit_habit_log_path(block.habit, block),
+                      class: "absolute inset-x-1 z-10 rounded-lg border-2 border-black cursor-pointer transition-transform hover:scale-[1.02] habit-card block",
+                      style: "top: 0; height: #{time_block_height(block)}px; background: #{block.habit.color_css_var};",
+                      data: { token: block.habit.color_token, time_block: true, turbo_frame: "edit_modal" } do %>
+                    <div class="p-2 h-full flex flex-col">
+                      <p class="font-black text-sm truncate"><%= block.habit.name %></p>
+                      <% if block.show_extended_details? %>
+                        <p class="text-xs opacity-70 mt-1"><%= block.time_range_display %></p>
+                        <% if block.notes.present? %>
+                          <p class="text-xs opacity-50 mt-auto truncate"><%= block.notes %></p>
+                        <% end %>
+                      <% end %>
+                    </div>
                   <% end %>
                 <% end %>
               </div>
-            <% end %>
+              <!-- Drag handle zone - for mobile touch dragging -->
+              <div class="drag-handle w-10 shrink-0 border-l border-dashed border-black/20 flex items-center justify-center cursor-pointer"
+                   data-hour="<%= hour %>"
+                   data-action="touchstart->time-block#startTouchDrag mousedown->time-block#startDrag">
+                <span class="text-base font-black text-black/40 select-none">＋</span>
+              </div>
+            </div>
           <% end %>
-        </div>
-        <!-- Drag handle zone - for mobile touch dragging (narrower to reduce accidental touches) -->
-        <div class="drag-handle w-10 shrink-0 border-l border-dashed border-black/20 flex items-center justify-center cursor-pointer"
-             data-hour="<%= hour %>"
-             data-action="touchstart->time-block#startTouchDrag mousedown->time-block#startDrag">
-          <span class="text-base font-black text-black/40 select-none">＋</span>
         </div>
       </div>
     <% end %>
     <!-- Drag selection overlay - INSIDE the scrollable container -->
     <div data-time-block-target="selection"
-         class="hidden absolute left-12 right-10 md:right-1 border-2 border-dashed rounded-lg z-20 pointer-events-none"
+         class="hidden absolute left-20 right-10 md:right-1 border-2 border-dashed rounded-lg z-20 pointer-events-none"
          style="top: 0; height: 60px; background: var(--accent-primary); opacity: 0.5; border-color: var(--accent-primary);">
     </div>
   </div>

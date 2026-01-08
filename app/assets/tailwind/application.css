@@ -453,6 +453,31 @@
     background: var(--bg-evening);
   }
 
+  /* Work hours styling */
+  .work-hour-bg {
+    background-color: rgba(0, 0, 0, 0.12);
+  }
+
+  .work-block-text {
+    color: rgba(0, 0, 0, 0.25);
+  }
+
+  [data-theme="monochrome"] .work-hour-bg {
+    background-color: rgba(0, 0, 0, 0.10);
+  }
+
+  [data-theme="monochrome"] .work-block-text {
+    color: rgba(0, 0, 0, 0.2);
+  }
+
+  [data-theme="catppuccin"] .work-hour-bg {
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+
+  [data-theme="catppuccin"] .work-block-text {
+    color: rgba(245, 224, 220, 0.3);
+  }
+
   /* Stats card backgrounds */
   .bg-stat-today {
     background: var(--bg-stat-today);
