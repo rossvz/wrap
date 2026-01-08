@@ -67,20 +67,28 @@ class User < ApplicationRecord
   end
 
   def work_hours_enabled=(value)
-    self.work_schedule = (work_schedule || {}).merge("work_hours_enabled" => value)
+    self.work_schedule = work_schedule_hash.merge("work_hours_enabled" => value)
   end
 
   def work_start_hour=(value)
-    self.work_schedule = (work_schedule || {}).merge("work_start_hour" => value.to_d)
+    self.work_schedule = work_schedule_hash.merge("work_start_hour" => value.to_d)
   end
 
   def work_end_hour=(value)
-    self.work_schedule = (work_schedule || {}).merge("work_end_hour" => value.to_d)
+    self.work_schedule = work_schedule_hash.merge("work_end_hour" => value.to_d)
   end
 
   def work_days=(value)
     days = Array(value).reject(&:blank?).map(&:to_i)
-    self.work_schedule = (work_schedule || {}).merge("work_days" => days)
+    self.work_schedule = work_schedule_hash.merge("work_days" => days)
+  end
+
+  def work_schedule_hash
+    case work_schedule
+    when Hash then work_schedule
+    when String then work_schedule.blank? ? {} : (JSON.parse(work_schedule) rescue {})
+    else {}
+    end
   end
 
   private
