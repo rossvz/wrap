@@ -328,9 +328,17 @@ export default class extends Controller {
 
     if (!startSlot || !endSlot) return;
 
-    const top = startSlot.offsetTop;
-    const height =
-      endSlot.offsetTop + endSlot.offsetHeight - startSlot.offsetTop;
+    // Use getBoundingClientRect for accurate positioning regardless of nesting
+    // offsetTop doesn't work correctly because hour slots are nested inside
+    // section containers with position: relative
+    const containerRect = this.timelineTarget.getBoundingClientRect();
+    const startRect = startSlot.getBoundingClientRect();
+    const endRect = endSlot.getBoundingClientRect();
+
+    // Calculate position relative to the timeline container, accounting for scroll
+    const scrollTop = this.timelineTarget.scrollTop;
+    const top = startRect.top - containerRect.top + scrollTop;
+    const height = endRect.bottom - startRect.top;
 
     this.selectionTarget.style.top = `${top}px`;
     this.selectionTarget.style.height = `${height}px`;
