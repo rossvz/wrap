@@ -13,7 +13,7 @@ module WrapCli
       print "Enter your API token: "
       token = $stdin.gets.chomp
 
-      print "Enter API base URL [http://localhost:3000]: "
+      print "Enter API base URL [https://wrap.rosscodes.com]: "
       url = $stdin.gets.chomp
       url = "http://localhost:3000" if url.empty?
 
