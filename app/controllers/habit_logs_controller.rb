@@ -2,19 +2,15 @@ class HabitLogsController < ApplicationController
   before_action :set_habit, only: %i[index edit update destroy]
   before_action :set_habit_log, only: %i[edit update destroy]
 
-  # GET /habits/:habit_id/logs
   def index
     @habit_logs = @habit.habit_logs.most_recent_first
     @habit_log = @habit.habit_logs.new(logged_on: current_date, start_hour: 9, end_hour: 10)
   end
 
-  # GET /habits/:habit_id/logs/:id/edit
   def edit
     @habits = current_user.habits.where(active: true).order(:name)
   end
 
-  # POST /habit_logs (standalone route for timeline)
-  # POST /habits/:habit_id/logs (nested route)
   def create
     habit = Habit.find_or_create_for_user(
       current_user,
@@ -36,7 +32,6 @@ class HabitLogsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /habits/:habit_id/logs/:id
   def update
     new_habit_id = params.dig(:habit_log, :habit_id)
     if new_habit_id.present? && new_habit_id.to_s != @habit_log.habit_id.to_s
@@ -54,7 +49,6 @@ class HabitLogsController < ApplicationController
       end
   end
 
-  # DELETE /habits/:habit_id/logs/:id
   def destroy
     @habit_log.destroy!
     @day = DaySummary.new(current_user, current_date)
