@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   has_many :sessions, dependent: :destroy
   has_many :magic_links, dependent: :destroy
+  has_many :api_tokens, dependent: :destroy
   has_many :habits, dependent: :destroy, inverse_of: :user
   has_many :push_subscriptions, dependent: :destroy
   has_many :tags, dependent: :destroy, inverse_of: :user

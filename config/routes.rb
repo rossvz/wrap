@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+  namespace :api do
+    namespace :v1 do
+      resources :habits, only: [ :index ] do
+        resources :logs, only: [ :create ], controller: "habit_logs"
+      end
+    end
+  end
+
+  resources :api_tokens, only: [ :index, :create, :destroy ]
+
   root "dashboard#index"
   get "dashboard" => "dashboard#index"
   delete "dashboard/clear_day" => "dashboard#clear_day", as: :clear_day

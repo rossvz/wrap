@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_08_015212) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_25_200525) do
+  create_table "api_tokens", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "last_used_at"
+    t.string "last_used_ip"
+    t.string "name"
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["token"], name: "index_api_tokens_on_token", unique: true
+    t.index ["user_id"], name: "index_api_tokens_on_user_id"
+  end
+
   create_table "habit_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "end_hour", precision: 3, scale: 1
@@ -102,6 +114,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_08_015212) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "api_tokens", "users"
   add_foreign_key "habit_logs", "habits"
   add_foreign_key "habits", "users"
   add_foreign_key "magic_links", "users"

@@ -1,0 +1,29 @@
+<%= tag.div id: dom_id(api_token), class: "py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4" do %>
+  <div class="flex-1">
+    <p class="font-bold text-lg">
+      <%= api_token.name.presence || "Unnamed token" %>
+    </p>
+    <p class="text-sm text-black/70 mt-1">
+      <span class="font-mono bg-black/5 px-2 py-0.5 rounded">
+        ****<%= api_token.token.last(8) %>
+      </span>
+    </p>
+    <p class="text-xs text-black/50 mt-2">
+      Created <%= time_ago_in_words(api_token.created_at) %> ago
+      <% if api_token.last_used_at %>
+        &middot; Last used <%= time_ago_in_words(api_token.last_used_at) %> ago
+        <% if api_token.last_used_ip.present? %>
+          from <%= api_token.last_used_ip %>
+        <% end %>
+      <% else %>
+        &middot; Never used
+      <% end %>
+    </p>
+  </div>
+
+  <%= button_to "Revoke",
+      api_token_path(api_token),
+      method: :delete,
+      class: "nb-btn nb-btn--white text-red-600 hover:bg-red-50",
+      data: { turbo_confirm: "Are you sure you want to revoke this token? Any applications using it will lose access." } %>
+<% end %>

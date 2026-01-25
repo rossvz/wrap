@@ -1,0 +1,50 @@
+<% content_for :title, "API Tokens" %>
+
+<div class="nb-page">
+  <div class="nb-page-header">
+    <div>
+      <p class="text-xs font-black uppercase tracking-widest">Settings</p>
+      <h1 class="mt-1 text-5xl font-black leading-tight">API Tokens</h1>
+      <p class="mt-2 text-sm text-black/70">Manage tokens for CLI and API access.</p>
+    </div>
+    <%= link_to "Back", settings_path, class: "nb-btn nb-btn--white" %>
+  </div>
+
+  <div class="nb-card">
+    <div class="mb-6">
+      <h2 class="text-2xl font-black">Create New Token</h2>
+      <p class="mt-1 text-sm text-black/70">
+        Generate a new API token for CLI tools or integrations.
+      </p>
+    </div>
+
+    <%= form_with url: api_tokens_path, method: :post, class: "flex flex-col gap-4 sm:flex-row sm:items-end" do |form| %>
+      <div class="flex-1">
+        <%= form.label :name, "Token Name (optional)", class: "nb-label" %>
+        <%= form.text_field :name,
+            placeholder: "e.g., Claude CLI, Work laptop",
+            class: "nb-input mt-2 w-full" %>
+      </div>
+      <%= form.submit "Generate Token", class: "nb-btn nb-btn--yellow" %>
+    <% end %>
+
+    <div id="new_token_display"></div>
+  </div>
+
+  <div class="nb-card mt-6">
+    <div class="mb-6">
+      <h2 class="text-2xl font-black">Active Tokens</h2>
+      <p class="mt-1 text-sm text-black/70">
+        Tokens that can access your account via the API.
+      </p>
+    </div>
+
+    <div id="api_tokens_list" class="divide-y-2 divide-black">
+      <% if @api_tokens.any? %>
+        <%= render @api_tokens %>
+      <% else %>
+        <p class="text-black/50 py-4">No tokens yet. Create one above to get started.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

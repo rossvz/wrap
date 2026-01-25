@@ -1,0 +1,11 @@
+one:
+  user: one
+  token: test_token_abc123
+  name: Test CLI Token
+  last_used_at: <%= 1.day.ago %>
+  last_used_ip: 192.168.1.1
+
+two:
+  user: two
+  token: other_user_token_xyz
+  name: Other User Token
