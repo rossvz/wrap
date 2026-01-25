@@ -1,6 +1,8 @@
 require "test_helper"
 
-class Api::V1::HabitLogsControllerTest < ActionDispatch::IntegrationTest
+module Api
+  module V1
+    class HabitLogsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
     @habit = habits(:one)
@@ -85,5 +87,7 @@ class Api::V1::HabitLogsControllerTest < ActionDispatch::IntegrationTest
 
   def auth_headers(token)
     { "Authorization" => "Bearer #{token.token}" }
+  end
+    end
   end
 end
