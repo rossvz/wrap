@@ -12,7 +12,9 @@ export default class extends Controller {
   }
 
   close() {
-    // Navigate to dashboard to clear the turbo frame
-    Turbo.visit(window.location.pathname, { action: "replace" })
+    const frame = this.element.closest("turbo-frame")
+    if (frame) {
+      frame.innerHTML = ""
+    }
   }
 }
