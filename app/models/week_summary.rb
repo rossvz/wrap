@@ -1,33 +1,12 @@
-class WeekSummary
-  include StreakCalculator
-  include SummaryCalculations
-
-  attr_reader :week_start
-
-  def initialize(user, date = nil)
-    @user = user
-    @week_start = (date || Date.current).beginning_of_week(:monday)
-  end
+class WeekSummary < BaseSummary
+  alias_method :week_start, :period_start
 
   def week_end
     @week_end ||= week_start.end_of_week(:monday)
   end
 
-  def date_range
-    week_start..week_end
-  end
-
-  def chart_data
-    {
-      labels: days.map { |d| d.strftime("%a") },
-      datasets: [ {
-        label: "Hours",
-        data: days.map { |d| (hours_by_day[d] || 0).round(1) },
-        backgroundColor: days.map.with_index { |_, i| bar_colors[i % bar_colors.size] },
-        borderColor: "var(--ink-color)",
-        borderWidth: 2
-      } ]
-    }
+  def period_end
+    week_end
   end
 
   def previous_week_start
@@ -36,10 +15,6 @@ class WeekSummary
 
   def next_week_start
     week_start + 1.week
-  end
-
-  def can_navigate_next?
-    next_week_start.beginning_of_week(:monday) <= Date.current.beginning_of_week(:monday)
   end
 
   def previous_period_date
@@ -60,7 +35,15 @@ class WeekSummary
 
   private
 
-  def days
-    @days ||= date_range.to_a
+  def normalize_date(date)
+    date.beginning_of_week(:monday)
+  end
+
+  def chart_labels
+    days.map { |d| d.strftime("%a") }
+  end
+
+  def chart_values
+    days.map { |d| (hours_by_day[d] || 0).round(1) }
   end
 end
