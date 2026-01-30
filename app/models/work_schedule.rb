@@ -2,7 +2,7 @@ class WorkSchedule
   ALLOWED_KEYS = %w[work_hours_enabled work_start_hour work_end_hour work_days].freeze
   DEFAULT_START_HOUR = 9.0
   DEFAULT_END_HOUR = 17.0
-  DEFAULT_WORK_DAYS = [1, 2, 3, 4, 5].freeze
+  DEFAULT_WORK_DAYS = [ 1, 2, 3, 4, 5 ].freeze
 
   attr_reader :data
 

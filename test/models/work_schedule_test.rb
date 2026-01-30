@@ -52,29 +52,29 @@ class WorkScheduleTest < ActiveSupport::TestCase
 
   test "work_days defaults to Mon-Fri" do
     schedule = WorkSchedule.new
-    assert_equal [1, 2, 3, 4, 5], schedule.work_days
+    assert_equal [ 1, 2, 3, 4, 5 ], schedule.work_days
   end
 
   test "work_days= converts strings to integers" do
     schedule = WorkSchedule.new
-    schedule.work_days = ["1", "2", "3"]
-    assert_equal [1, 2, 3], schedule.work_days
+    schedule.work_days = [ "1", "2", "3" ]
+    assert_equal [ 1, 2, 3 ], schedule.work_days
   end
 
   test "work_days= rejects blank values" do
     schedule = WorkSchedule.new
-    schedule.work_days = ["1", "", "3", nil]
-    assert_equal [1, 3], schedule.work_days
+    schedule.work_days = [ "1", "", "3", nil ]
+    assert_equal [ 1, 3 ], schedule.work_days
   end
 
   test "work_day? returns true for days in work_days" do
-    schedule = WorkSchedule.new("work_days" => [1, 2, 3])
+    schedule = WorkSchedule.new("work_days" => [ 1, 2, 3 ])
     monday = Date.new(2025, 1, 6)
     assert schedule.work_day?(monday)
   end
 
   test "work_day? returns false for days not in work_days" do
-    schedule = WorkSchedule.new("work_days" => [1, 2, 3, 4, 5])
+    schedule = WorkSchedule.new("work_days" => [ 1, 2, 3, 4, 5 ])
     sunday = Date.new(2025, 1, 5)
     assert_not schedule.work_day?(sunday)
   end
@@ -84,7 +84,7 @@ class WorkScheduleTest < ActiveSupport::TestCase
       "work_hours_enabled" => true,
       "work_start_hour" => 9,
       "work_end_hour" => 17,
-      "work_days" => [1, 2, 3, 4, 5],
+      "work_days" => [ 1, 2, 3, 4, 5 ],
       "malicious_key" => "bad_value"
     )
     result = schedule.to_h
@@ -116,7 +116,7 @@ class WorkScheduleTest < ActiveSupport::TestCase
   end
 
   test "valid? returns false when work_days contains invalid day numbers" do
-    schedule = WorkSchedule.new("work_hours_enabled" => true, "work_days" => [7])
+    schedule = WorkSchedule.new("work_hours_enabled" => true, "work_days" => [ 7 ])
     assert_not schedule.valid?
     assert_includes schedule.errors, "Work days must be valid day numbers (0-6)"
   end
