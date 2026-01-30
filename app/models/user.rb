@@ -11,8 +11,6 @@ class User < ApplicationRecord
   serialize :notification_hours, coder: JSON
   serialize :work_schedule, coder: JSON
 
-  ALLOWED_WORK_SCHEDULE_KEYS = %w[work_hours_enabled work_start_hour work_end_hour work_days].freeze
-
   validates :email_address, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :theme, inclusion: { in: THEMES }
   validates :notification_hours, length: { maximum: 6, message: "can have at most 6 notification times" }
@@ -47,44 +45,56 @@ class User < ApplicationRecord
     time_zone.presence || "UTC"
   end
 
-  # Work schedule accessors with type coercion
+  def work_schedule_object
+    @work_schedule_object ||= WorkSchedule.new(work_schedule)
+  end
+
   def work_hours_enabled?
-    ActiveModel::Type::Boolean.new.cast(work_schedule&.dig("work_hours_enabled"))
+    work_schedule_object.enabled?
   end
 
   def work_hours_enabled=(value)
-    self.work_schedule = (work_schedule || {}).merge("work_hours_enabled" => value)
+    work_schedule_object.enabled = value
+    sync_work_schedule_from_object
   end
 
   def work_start_hour
-    (work_schedule&.dig("work_start_hour") || 9.0).to_d
+    work_schedule_object.start_hour
   end
 
   def work_start_hour=(value)
-    self.work_schedule = (work_schedule || {}).merge("work_start_hour" => value.to_d)
+    work_schedule_object.start_hour = value
+    sync_work_schedule_from_object
   end
 
   def work_end_hour
-    (work_schedule&.dig("work_end_hour") || 17.0).to_d
+    work_schedule_object.end_hour
   end
 
   def work_end_hour=(value)
-    self.work_schedule = (work_schedule || {}).merge("work_end_hour" => value.to_d)
+    work_schedule_object.end_hour = value
+    sync_work_schedule_from_object
   end
 
   def work_days
-    work_schedule&.dig("work_days") || [ 1, 2, 3, 4, 5 ]
+    work_schedule_object.work_days
   end
 
   def work_days=(value)
-    self.work_schedule = (work_schedule || {}).merge("work_days" => Array(value).reject(&:blank?).map(&:to_i))
+    work_schedule_object.work_days = value
+    sync_work_schedule_from_object
   end
 
   def work_day?(date)
-    work_days.include?(date.wday)
+    work_schedule_object.work_day?(date)
   end
 
   private
+
+  def sync_work_schedule_from_object
+    self.work_schedule = work_schedule_object.to_h
+    @work_schedule_object = nil
+  end
 
   def notification_hours_in_valid_range
     return if notification_hours.blank?
@@ -94,29 +104,13 @@ class User < ApplicationRecord
   end
 
   def work_schedule_valid
-    return unless work_hours_enabled?
-
-    unless work_start_hour.between?(0, 24)
-      errors.add(:base, "Work start hour must be between 0 and 24")
-    end
-
-    unless work_end_hour.between?(0, 24)
-      errors.add(:base, "Work end hour must be between 0 and 24")
-    end
-
-    if work_start_hour >= work_end_hour
-      errors.add(:base, "Work end hour must be after start hour")
-    end
-
-    if work_days.present?
-      unless work_days.is_a?(Array) && work_days.all? { |d| d.is_a?(Integer) && d.between?(0, 6) }
-        errors.add(:base, "Work days must be valid day numbers (0-6)")
-      end
+    work_schedule_object.errors.each do |error|
+      errors.add(:base, error)
     end
   end
 
   def sanitize_work_schedule
     return if work_schedule.blank?
-    self.work_schedule = work_schedule.slice(*ALLOWED_WORK_SCHEDULE_KEYS)
+    self.work_schedule = work_schedule.slice(*WorkSchedule::ALLOWED_KEYS)
   end
 end
