@@ -35,3 +35,7 @@
 .envrc
 
 .claude/settings.local.json
+
+# Beads task tracking (ephemeral)
+.beads/
+.mcp.json
