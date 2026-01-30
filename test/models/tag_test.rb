@@ -53,4 +53,21 @@ class TagTest < ActiveSupport::TestCase
     tags = user.tags.by_popularity
     assert tags.first.taggings_count >= tags.last.taggings_count
   end
+
+  test "sanitize_name returns sanitized name for valid input" do
+    assert_equal "my tag", Tag.sanitize_name("  My Tag  ")
+    assert_equal "test", Tag.sanitize_name("TEST")
+    assert_equal "hello-world", Tag.sanitize_name("Hello-World")
+  end
+
+  test "sanitize_name returns nil for blank input" do
+    assert_nil Tag.sanitize_name("")
+    assert_nil Tag.sanitize_name("   ")
+    assert_nil Tag.sanitize_name(nil)
+  end
+
+  test "sanitize_name returns nil for names exceeding max length" do
+    assert_nil Tag.sanitize_name("a" * 31)
+    assert_equal "a" * 30, Tag.sanitize_name("a" * 30)
+  end
 end
