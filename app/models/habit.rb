@@ -83,10 +83,10 @@ class Habit < ApplicationRecord
 
   def add_tags_by_names(names, user)
     Array(names).each do |name|
-      cleaned = name.to_s.strip.downcase
-      next if cleaned.blank? || cleaned.length > 30
+      sanitized = Tag.sanitize_name(name)
+      next unless sanitized
 
-      tag = user.tags.find_or_create_by(name: cleaned)
+      tag = user.tags.find_or_create_by(name: sanitized)
       tags << tag unless tags.include?(tag)
     end
   end

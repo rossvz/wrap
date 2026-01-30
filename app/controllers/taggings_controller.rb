@@ -27,10 +27,10 @@ class TaggingsController < ApplicationController
     if params[:tag_id].present?
       current_user.tags.find_by(id: params[:tag_id])
     elsif params[:tag_name].present?
-      name = params[:tag_name].to_s.strip.downcase
-      return nil if name.blank? || name.length > 30
+      sanitized = Tag.sanitize_name(params[:tag_name])
+      return nil unless sanitized
 
-      current_user.tags.find_or_create_by(name: name)
+      current_user.tags.find_or_create_by(name: sanitized)
     end
   end
 end
