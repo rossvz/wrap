@@ -62,4 +62,93 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
     get habit_url(other_habit)
     assert_response :not_found
   end
+
+  test "should not create habit with invalid params" do
+    assert_no_difference("Habit.count") do
+      post habits_url, params: { habit: { name: "", color_token: 1 } }
+    end
+    assert_response :unprocessable_entity
+  end
+
+  test "should not update habit with invalid params" do
+    patch habit_url(@habit), params: { habit: { name: "" } }
+    assert_response :unprocessable_entity
+    @habit.reload
+    assert_not_equal "", @habit.name
+  end
+
+  test "should create habit with JSON response" do
+    assert_difference("Habit.count") do
+      post habits_url, params: { habit: { name: "JSON Habit", color_token: 3 } }, as: :json
+    end
+    assert_response :created
+  end
+
+  test "should update habit with JSON response" do
+    patch habit_url(@habit), params: { habit: { name: "Updated Name" } }, as: :json
+    assert_response :ok
+    @habit.reload
+    assert_equal "Updated Name", @habit.name
+  end
+
+  test "should destroy habit with JSON response" do
+    assert_difference("Habit.count", -1) do
+      delete habit_url(@habit), as: :json
+    end
+    assert_response :no_content
+  end
+
+  test "should create habit with tags" do
+    tag = @user.tags.create!(name: "work")
+
+    assert_difference("Habit.count") do
+      post habits_url, params: {
+        habit: { name: "Tagged Habit", color_token: 3, tag_ids: [ tag.id ] }
+      }
+    end
+
+    assert_includes Habit.last.tags, tag
+  end
+
+  test "should create habit with new tags" do
+    assert_difference([ "Habit.count", "Tag.count" ]) do
+      post habits_url, params: {
+        habit: { name: "Tagged Habit", color_token: 3 },
+        new_tags: [ "brandnew" ]
+      }
+    end
+
+    assert_includes Habit.last.tags.pluck(:name), "brandnew"
+  end
+
+  test "should not assign other users tags" do
+    other_user = users(:two)
+    other_tag = other_user.tags.create!(name: "othertag")
+
+    post habits_url, params: {
+      habit: { name: "Test", color_token: 3, tag_ids: [ other_tag.id ] }
+    }
+
+    assert_not_includes Habit.last.tags, other_tag
+  end
+
+  test "should not update other users habits" do
+    other_user = users(:two)
+    other_habit = other_user.habits.create!(name: "Other Habit", color_token: 1)
+
+    patch habit_url(other_habit), params: { habit: { name: "Hacked" } }
+    assert_response :not_found
+    other_habit.reload
+    assert_equal "Other Habit", other_habit.name
+  end
+
+  test "should not destroy other users habits" do
+    other_user = users(:two)
+    other_habit = other_user.habits.create!(name: "Other Habit", color_token: 1)
+
+    assert_no_difference("Habit.count") do
+      delete habit_url(other_habit)
+    end
+    assert_response :not_found
+  end
 end

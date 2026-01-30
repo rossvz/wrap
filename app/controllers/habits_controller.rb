@@ -34,6 +34,7 @@ class HabitsController < ApplicationController
         format.html { redirect_to @habit, notice: "Habit was successfully created." }
         format.json { render :show, status: :created, location: @habit }
       else
+        @habit_tag_ids = @habit.tag_ids.to_set
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @habit.errors, status: :unprocessable_entity }
       end
@@ -48,6 +49,7 @@ class HabitsController < ApplicationController
         format.html { redirect_to @habit, notice: "Habit was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @habit }
       else
+        @habit_tag_ids = @habit.tag_ids.to_set
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @habit.errors, status: :unprocessable_entity }
       end
