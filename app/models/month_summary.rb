@@ -1,33 +1,12 @@
-class MonthSummary
-  include StreakCalculator
-  include SummaryCalculations
-
-  attr_reader :month_start
-
-  def initialize(user, date = nil)
-    @user = user
-    @month_start = (date || Date.current).beginning_of_month
-  end
+class MonthSummary < BaseSummary
+  alias_method :month_start, :period_start
 
   def month_end
     @month_end ||= month_start.end_of_month
   end
 
-  def date_range
-    month_start..month_end
-  end
-
-  def chart_data
-    {
-      labels: days.map { |d| d.day.to_s },
-      datasets: [ {
-        label: "Hours",
-        data: days.map { |d| (hours_by_day[d] || 0).round(1) },
-        backgroundColor: days.map.with_index { |_, i| bar_colors[i % bar_colors.size] },
-        borderColor: "var(--ink-color)",
-        borderWidth: 2
-      } ]
-    }
+  def period_end
+    month_end
   end
 
   def previous_month
@@ -36,10 +15,6 @@ class MonthSummary
 
   def next_month
     month_start + 1.month
-  end
-
-  def can_navigate_next?
-    next_month.beginning_of_month <= Date.current.beginning_of_month
   end
 
   def previous_period_date
@@ -60,7 +35,15 @@ class MonthSummary
 
   private
 
-  def days
-    @days ||= date_range.to_a
+  def normalize_date(date)
+    date.beginning_of_month
+  end
+
+  def chart_labels
+    days.map { |d| d.day.to_s }
+  end
+
+  def chart_values
+    days.map { |d| (hours_by_day[d] || 0).round(1) }
   end
 end

@@ -1,20 +1,12 @@
-class YearSummary
-  include StreakCalculator
-  include SummaryCalculations
-
-  attr_reader :year_start
-
-  def initialize(user, date = nil)
-    @user = user
-    @year_start = (date || Date.current).beginning_of_year
-  end
+class YearSummary < BaseSummary
+  alias_method :year_start, :period_start
 
   def year_end
     @year_end ||= year_start.end_of_year
   end
 
-  def date_range
-    year_start..year_end
+  def period_end
+    year_end
   end
 
   def hours_by_month
@@ -24,29 +16,12 @@ class YearSummary
                           .transform_values { |logs| logs.sum { |l| l[:duration] } }
   end
 
-  def chart_data
-    {
-      labels: months.map { |m| m.strftime("%b") },
-      datasets: [ {
-        label: "Hours",
-        data: months.map { |m| hours_for_month(m) },
-        backgroundColor: months.map.with_index { |_, i| bar_colors[i % bar_colors.size] },
-        borderColor: "var(--ink-color)",
-        borderWidth: 2
-      } ]
-    }
-  end
-
   def previous_year
     year_start - 1.year
   end
 
   def next_year
     year_start + 1.year
-  end
-
-  def can_navigate_next?
-    next_year.beginning_of_year <= Date.current.beginning_of_year
   end
 
   def previous_period_date
@@ -67,8 +42,20 @@ class YearSummary
 
   private
 
+  def normalize_date(date)
+    date.beginning_of_year
+  end
+
   def months
     @months ||= (0..11).map { |i| year_start + i.months }
+  end
+
+  def chart_labels
+    months.map { |m| m.strftime("%b") }
+  end
+
+  def chart_values
+    months.map { |m| hours_for_month(m) }
   end
 
   def hours_for_month(month)
