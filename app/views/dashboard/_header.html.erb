@@ -1,14 +1,32 @@
 <%# Dashboard header - extracted for Turbo Stream replacement %>
-<div id="dashboard_header" class="nb-page-header">
+<div id="dashboard_header" class="nb-page-header gap-2 md:gap-4">
   <div class="flex-1">
-    <p class="text-xs font-black uppercase tracking-widest">Today</p>
-    <h1 class="mt-1 text-3xl md:text-5xl font-black leading-tight"><%= day.date.strftime("%A") %></h1>
+    <p class="text-xs font-black uppercase tracking-widest">
+      <% if day.date == Time.zone.today %>
+        Today
+      <% elsif day.date == Time.zone.yesterday %>
+        Yesterday
+      <% end %>
+    </p>
+    <div class="flex items-center gap-2 mt-1">
+      <%= link_to "\u2190", dashboard_path(**{ date: (day.date - 1.day).to_s, tag: params[:tag].presence }.compact),
+          class: "inline-flex items-center justify-center w-8 h-8 border-2 font-black no-underline hover:no-underline",
+          style: "background: var(--bg-card); border-color: var(--ink-color, #000); box-shadow: 2px 2px 0 var(--shadow-color, #000);" %>
+      <h1 class="text-2xl md:text-5xl font-black leading-tight"><%= day.date.strftime("%A") %></h1>
+      <% if day.date < Time.zone.today %>
+        <% next_date = day.date + 1.day %>
+        <% next_path = next_date == Time.zone.today ? dashboard_path(**{ tag: params[:tag].presence }.compact) : dashboard_path(**{ date: next_date.to_s, tag: params[:tag].presence }.compact) %>
+        <%= link_to "\u2192", next_path,
+            class: "inline-flex items-center justify-center w-8 h-8 border-2 font-black no-underline hover:no-underline",
+            style: "background: var(--bg-card); border-color: var(--ink-color, #000); box-shadow: 2px 2px 0 var(--shadow-color, #000);" %>
+      <% end %>
+    </div>
     <p class="mt-1 md:mt-2 text-sm text-black/70"><%= day.date.strftime("%B %d, %Y") %></p>
   </div>
   <!-- Activity visualization - bucket fill style -->
   <div class="flex flex-col items-end gap-2">
     <!-- Rectangular minimap of the day -->
-    <div class="w-32 md:w-48 h-16 md:h-20 border-2 border-black rounded-lg overflow-hidden bg-white flex flex-col-reverse"
+    <div class="w-28 md:w-48 h-12 md:h-20 border-2 border-black rounded-lg overflow-hidden bg-white flex flex-col-reverse"
          style="box-shadow: 3px 3px 0 #000;">
       <% day.activity_breakdown.each do |entry| %>
         <% percent = (entry[:hours] / day.total_hours) * 100 %>
@@ -19,11 +37,11 @@
       <% end %>
     </div>
     <% if day.total_hours > 0 %>
-      <div class="flex items-center justify-between w-32 md:w-48 gap-2">
+      <div class="flex items-center justify-between w-28 md:w-48 gap-2">
         <div class="">
           <span><%= day.total_hours.to_i %> hours</span>
         </div>
-        <%= button_to clear_day_path, method: :delete, class: "nb-btn nb-btn--white text-xs", data: { turbo_confirm: "Clear all time blocks for today?" } do %>
+        <%= button_to clear_day_path(date: day.date.to_s), method: :delete, class: "nb-btn nb-btn--white text-xs", data: { turbo_confirm: "Clear all time blocks for this day?" } do %>
           Clear Day
         <% end %>
       </div>
