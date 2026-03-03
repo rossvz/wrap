@@ -20,7 +20,7 @@ class User < ApplicationRecord
   before_save :sanitize_work_schedule
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
-  normalizes :notification_hours, with: ->(hours) { Array(hours).map(&:to_i) }
+  normalizes :notification_hours, with: ->(hours) { Array(hours).reject(&:blank?).map(&:to_i) }
 
   def send_magic_link
     magic_links.create!.tap do |magic_link|
