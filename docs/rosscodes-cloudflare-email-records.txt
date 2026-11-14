@@ -1,5 +1,0 @@
-; Additional Wrap email records missed by the Cloudflare scan.
-; Import alongside existing records before changing nameservers.
-send.wrap.rosscodes.com. 3586	IN	MX	10 feedback-smtp.us-east-1.amazonses.com.
-send.wrap.rosscodes.com. 3586	IN	TXT	"v=spf1 include:amazonses.com ~all"
-resend._domainkey.wrap.rosscodes.com. 3586 IN TXT "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnb2sp+g7a7UUE6nFIii+C3ANJrr999MgHzpgSWEAtErVcRWnZ6yJq9In4nNSpZaEKijcf8eODiXCh30rkrWdRm4kmHubgdHII1JGSYO1jOYtr3E9ho8XYOsN7xrG76gp7KWX1XpU1qriNJm2ybEeWo9OB6Xlbf2I8hM7QmlPWWwIDAQAB"

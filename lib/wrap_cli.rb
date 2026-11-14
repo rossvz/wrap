@@ -13,9 +13,9 @@ module WrapCli
       print "Enter your API token: "
       token = $stdin.gets.chomp
 
-      print "Enter API base URL [https://wrap.rosscodes.com]: "
+      print "Enter API base URL [https://wrap.rossvz.com]: "
       url = $stdin.gets.chomp
-      url = "http://localhost:3000" if url.empty?
+      url = "https://wrap.rossvz.com" if url.empty?
 
       save_config("token" => token, "base_url" => url)
       puts "Configuration saved to #{CONFIG_PATH}"

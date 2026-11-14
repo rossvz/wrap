@@ -13,7 +13,7 @@ servers:
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 proxy:
   ssl: true
-  host: wrap.rosscodes.com
+  host: wrap.rossvz.com
 
 # Where you keep your container images.
 registry:

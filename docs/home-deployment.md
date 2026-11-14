@@ -16,8 +16,8 @@ Docker starts at boot and restarts the app automatically. The existing Gang depl
 
 Secrets live in `/home/rossvz/apps/wrap/production.env`, mode 600, outside the synced source.
 They originate from the local Rails master key and the existing 1Password entries referenced in `.kamal/secrets`.
-`APP_HOST=wrap.rossvz.com` sets email links. The sender remains `noreply@wrap.rosscodes.com`,
-whose existing Resend DNS verification is managed at Netlify. Keep those DNS records and that domain active.
+`APP_HOST=wrap.rossvz.com` sets email links. The sender is `noreply@wrap.rossvz.com`.
+Resend verifies this domain through the records in `docs/email-dns-records.txt`, managed in Cloudflare DNS.
 
 ## Tunnel
 
