@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run on the Linux server. SQLite's backup API gives consistent snapshots even with WAL enabled.
+backup_dir="$HOME/apps/wrap/backups"
+mkdir -p "$backup_dir"
+chmod 700 "$backup_dir"
+archive="$backup_dir/$(date -u +%Y%m%dT%H%M%SZ).tar.gz"
+trap 'rm -f "$archive.tmp"' EXIT
+
+docker exec -i wrap-home bash -se > "$archive.tmp" <<'CONTAINER'
+set -euo pipefail
+snapshot=$(mktemp -d)
+trap 'rm -rf "$snapshot"' EXIT
+tar -C /rails/storage --exclude='*.sqlite3*' --exclude='./backups' -cf - . | tar -C "$snapshot" -xf -
+for database in /rails/storage/*.sqlite3; do
+  [[ -f "$database" ]] || continue
+  sqlite3 "$database" ".backup $snapshot/$(basename "$database")"
+done
+tar -C "$snapshot" -czf - .
+CONTAINER
+
+mv "$archive.tmp" "$archive"
+chmod 600 "$archive"
+echo "$archive"

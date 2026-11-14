@@ -25,7 +25,7 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
+  config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
@@ -57,7 +57,10 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "wrap.rosscodes.com", protocol: "https" }
+  config.action_mailer.default_url_options = {
+    host: ENV.fetch("APP_HOST", "wrap.rossvz.com"),
+    protocol: "https"
+  }
 
   # Configure SMTP via environment variables
   config.action_mailer.delivery_method = :smtp

@@ -1,3 +1,4 @@
+# Historical VPS configuration. Home deployment uses bin/deploy-home; see docs/home-deployment.md.
 # Name of your application. Used to uniquely configure containers.
 service: habit_tracker
 

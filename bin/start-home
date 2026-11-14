@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run on the Linux host after building wrap:home.
+env_file="$HOME/apps/wrap/production.env"
+[[ -s "$env_file" ]] || { echo "Missing $env_file" >&2; exit 1; }
+
+if docker container inspect wrap-home >/dev/null 2>&1; then
+  docker exec wrap-home sh -c 'mkdir -p /rails/storage/backups; sqlite3 /rails/storage/production.sqlite3 ".backup /rails/storage/backups/pre-deploy.sqlite3"'
+  if docker container inspect wrap-home-previous >/dev/null 2>&1; then
+    docker rm wrap-home-previous
+  fi
+  docker stop wrap-home
+  docker rename wrap-home wrap-home-previous
+fi
+
+rollback() {
+  docker logs --tail 30 wrap-home >&2 || true
+  docker rm -f wrap-home >/dev/null 2>&1 || true
+  if docker container inspect wrap-home-previous >/dev/null 2>&1; then
+    docker rename wrap-home-previous wrap-home
+    docker start wrap-home
+  fi
+  echo "Deployment failed; previous container restored if available. Database migrations are not reversed." >&2
+  exit 1
+}
+
+docker run -d --name wrap-home --restart unless-stopped \
+  --publish 127.0.0.1:4081:80 \
+  --env-file "$env_file" \
+  --volume wrap_home_storage:/rails/storage \
+  --log-opt max-size=10m --log-opt max-file=3 \
+  --health-cmd 'curl --fail --silent http://localhost/up >/dev/null' \
+  --health-interval 30s --health-timeout 5s --health-retries 3 \
+  wrap:home || rollback
+
+for attempt in {1..60}; do
+  if curl --fail --silent http://127.0.0.1:4081/up >/dev/null; then
+    echo "Wrap is healthy on 127.0.0.1:4081"
+    exit 0
+  fi
+  sleep 1
+done
+rollback

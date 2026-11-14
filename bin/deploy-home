@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+server="${WRAP_SERVER:-pop-os}"
+
+tailscale ssh "$server" 'mkdir -p ~/apps/wrap/source; chmod 700 ~/apps/wrap'
+rsync -az \
+  --exclude='.git' --exclude='.kamal' --exclude='.bundle' \
+  --exclude='config/master.key' --exclude='config/credentials/*.key' \
+  --exclude='.env*' --exclude='log/*' --exclude='tmp/*' \
+  --exclude='storage/*' --exclude='db/*.sqlite3*' \
+  --exclude='vendor/bundle' --exclude='node_modules' \
+  -e 'tailscale ssh' ./ "$server:apps/wrap/source/"
+
+tailscale ssh "$server" 'bash -se' <<'REMOTE'
+set -euo pipefail
+cd "$HOME/apps/wrap/source"
+docker build -t wrap:home .
+bin/start-home
+REMOTE

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+server="${WRAP_SERVER:-pop-os}"
+backup_dir="${WRAP_BACKUP_DIR:-$HOME/Library/Application Support/Wrap/backups}"
+mkdir -p "$backup_dir"
+chmod 700 "$backup_dir"
+tailscale ssh "$server" '~/apps/wrap/source/bin/backup-home'
+rsync -az -e 'tailscale ssh' "$server:apps/wrap/backups/" "$backup_dir/"
