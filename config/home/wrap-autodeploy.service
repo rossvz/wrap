@@ -1,0 +1,11 @@
+[Unit]
+Description=Deploy Wrap main after successful GitHub CI
+After=network-online.target
+
+[Service]
+Type=oneshot
+Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=/home/rossvz/apps/wrap/auto-source
+ExecStart=/home/rossvz/apps/wrap/auto-source/bin/auto-deploy-home
+TimeoutStartSec=30min
+

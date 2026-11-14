@@ -35,6 +35,12 @@ Then visit `http://localhost:3000`.
 bin/rails test
 ```
 
+## Production
+
+The app runs at [wrap.rossvz.com](https://wrap.rossvz.com) on the home Linux server through Cloudflare Tunnel.
+Changes to `main` deploy automatically after CI passes, normally within two minutes plus build time.
+See [the deployment guide](docs/home-deployment.md) for logs, manual deployment, and backups.
+
 ## Notes
 
 - Logs are unique per `(habit_id, logged_on)` so logging the same day will update that day’s entry.

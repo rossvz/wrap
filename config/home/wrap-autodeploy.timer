@@ -1,0 +1,9 @@
+[Unit]
+Description=Check for tested Wrap main commits every two minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=2min
+
+[Install]
+WantedBy=timers.target

@@ -98,6 +98,9 @@ jobs:
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test
 
+      - name: Test automatic deployment gates
+        run: python3 -m unittest discover -s test/deployment -p 'test_*.py'
+
   system-test:
     runs-on: ubuntu-latest
 

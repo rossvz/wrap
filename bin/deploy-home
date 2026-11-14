@@ -16,6 +16,9 @@ rsync -az \
 tailscale ssh "$server" 'bash -se' <<'REMOTE'
 set -euo pipefail
 cd "$HOME/apps/wrap/source"
+exec 9>"$HOME/apps/wrap/deploy.lock"
+flock -n 9
+export WRAP_DEPLOY_LOCKED=1
 docker build -t wrap:home .
 bin/start-home
 REMOTE

@@ -5,6 +5,20 @@ Tailscale provides SSH access; Cloudflare Tunnel provides public HTTPS without r
 
 ## Deploy
 
+Merges and pushes to `main` deploy automatically after the **CI** workflow succeeds for that exact commit.
+The mini checks every two minutes with `wrap-autodeploy.timer`. It fetches the public GitHub repository,
+checks the latest push CI run for the current `main` SHA, builds locally, and runs the same health-checked
+container replacement as a manual deploy. Failed or pending CI leaves the running app unchanged.
+If `main` changes during a build, that build is skipped and the next check considers the newer commit.
+
+This uses GitHub's public API and requires no GitHub token, Tailscale CI credentials, public webhook,
+or GitHub runner on the home server. Pull requests do not deploy. The Mac does not need to be online.
+Manual and automatic deployments share a lock to prevent concurrent builds and container replacements.
+
+The managed checkout is `/home/rossvz/apps/wrap/auto-source`; do not edit it by hand.
+The last successful deployment SHA is `/home/rossvz/apps/wrap/deployed-revision` and is also recorded
+as the app container's `org.opencontainers.image.revision` label.
+
 From this checkout on the Mac, run `bin/deploy-home`. This syncs source without databases or secrets,
 builds the Docker image on the Linux server, and replaces the app container after saving a database snapshot.
 If the health check fails, the script restores the previous container. Database migrations are not reversed.
@@ -33,7 +47,22 @@ tailscale ssh pop-os 'docker logs --tail 100 wrap-home'
 tailscale ssh pop-os 'systemctl --user status wrap-tunnel'
 tailscale ssh pop-os 'journalctl --user -u wrap-tunnel -n 50 --no-pager'
 tailscale ssh pop-os 'curl -f http://127.0.0.1:4081/up'
+tailscale ssh pop-os 'systemctl --user list-timers wrap-autodeploy.timer'
+tailscale ssh pop-os 'journalctl --user -u wrap-autodeploy -n 50 --no-pager'
+tailscale ssh pop-os 'cat ~/apps/wrap/deployed-revision'
 ```
+
+To check for a deployment immediately, run:
+
+```bash
+tailscale ssh pop-os 'systemctl --user start wrap-autodeploy.service'
+```
+
+To pause automatic deployment, stop the timer with
+`systemctl --user disable --now wrap-autodeploy.timer` on the server.
+This does not interrupt a deployment already running; inspect `wrap-autodeploy.service` before maintenance.
+The service and timer definitions are versioned in `config/home/`. They are installed under
+`~/.config/systemd/user/` on the mini, with user lingering enabled for boot startup.
 
 ## Backups
 

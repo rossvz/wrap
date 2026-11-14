@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [[ "${WRAP_DEPLOY_LOCKED:-}" != "1" ]]; then
+  exec 9>"$HOME/apps/wrap/deploy.lock"
+  flock -n 9
+fi
+
 # Run on the Linux host after building wrap:home.
 env_file="$HOME/apps/wrap/production.env"
 [[ -s "$env_file" ]] || { echo "Missing $env_file" >&2; exit 1; }
@@ -26,6 +31,7 @@ rollback() {
 }
 
 docker run -d --name wrap-home --restart unless-stopped \
+  --label "org.opencontainers.image.revision=${WRAP_DEPLOY_REVISION:-manual}" \
   --publish 127.0.0.1:4081:80 \
   --env-file "$env_file" \
   --volume wrap_home_storage:/rails/storage \
