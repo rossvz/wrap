@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+server="${WRAP_SERVER:-pop-os}"
+tailscale ssh "$server" 'bash -se' <<'REMOTE'
+set -euo pipefail
+status=0
+systemctl --user start wrap-autodeploy.service || status=$?
+journalctl --user -u wrap-autodeploy -n 20 --no-pager
+exit "$status"
+REMOTE

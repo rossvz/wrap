@@ -38,7 +38,7 @@ bin/rails test
 ## Production
 
 The app runs at [wrap.rossvz.com](https://wrap.rossvz.com) on the home Linux server through Cloudflare Tunnel.
-Changes to `main` deploy automatically after CI passes, normally within two minutes plus build time.
+The server checks for tested `main` commits daily at 4 AM Eastern. Run `bin/deploy-latest` to check and deploy sooner.
 See [the deployment guide](docs/home-deployment.md) for logs, manual deployment, and backups.
 
 ## Notes

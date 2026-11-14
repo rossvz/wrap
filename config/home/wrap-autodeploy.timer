@@ -1,9 +1,9 @@
 [Unit]
-Description=Check for tested Wrap main commits every two minutes
+Description=Check for tested Wrap main commits daily
 
 [Timer]
-OnBootSec=2min
-OnUnitInactiveSec=2min
+OnCalendar=*-*-* 04:00:00
+Persistent=true
 
 [Install]
 WantedBy=timers.target

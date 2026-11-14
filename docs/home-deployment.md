@@ -5,11 +5,12 @@ Tailscale provides SSH access; Cloudflare Tunnel provides public HTTPS without r
 
 ## Deploy
 
-Merges and pushes to `main` deploy automatically after the **CI** workflow succeeds for that exact commit.
-The mini checks every two minutes with `wrap-autodeploy.timer`. It fetches the public GitHub repository,
+The mini checks for new `main` commits daily at **4 AM Eastern** with `wrap-autodeploy.timer`.
+It deploys only after the **CI** workflow succeeds for that exact commit. It fetches the public GitHub repository,
 checks the latest push CI run for the current `main` SHA, builds locally, and runs the same health-checked
 container replacement as a manual deploy. Failed or pending CI leaves the running app unchanged.
 If `main` changes during a build, that build is skipped and the next check considers the newer commit.
+If the mini misses a scheduled check while powered off, it checks when it next starts.
 
 This uses GitHub's public API and requires no GitHub token, Tailscale CI credentials, public webhook,
 or GitHub runner on the home server. Pull requests do not deploy. The Mac does not need to be online.
@@ -19,8 +20,13 @@ The managed checkout is `/home/rossvz/apps/wrap/auto-source`; do not edit it by 
 The last successful deployment SHA is `/home/rossvz/apps/wrap/deployed-revision` and is also recorded
 as the app container's `org.opencontainers.image.revision` label.
 
-From this checkout on the Mac, run `bin/deploy-home`. This syncs source without databases or secrets,
+For an on-demand deployment of the latest tested `main`, run `bin/deploy-latest` from this checkout.
+The command waits for the server's deployment check and displays its logs. If CI is still pending or failed,
+it leaves the live app unchanged; run it again after CI succeeds.
+
+For a direct deployment of the local working tree, run `bin/deploy-home`. This syncs source without databases or secrets,
 builds the Docker image on the Linux server, and replaces the app container after saving a database snapshot.
+This direct deployment bypasses the GitHub CI gate; prefer `bin/deploy-latest` for normal releases.
 If the health check fails, the script restores the previous container. Database migrations are not reversed.
 The historical `config/deploy.yml` still describes the retired VPS; do not use it for this host.
 
@@ -55,7 +61,7 @@ tailscale ssh pop-os 'cat ~/apps/wrap/deployed-revision'
 To check for a deployment immediately, run:
 
 ```bash
-tailscale ssh pop-os 'systemctl --user start wrap-autodeploy.service'
+bin/deploy-latest
 ```
 
 To pause automatic deployment, stop the timer with
@@ -70,9 +76,9 @@ On the server, `~/apps/wrap/source/bin/backup-home` writes a dated archive under
 Each SQLite database uses SQLite's backup API; archives also contain uploaded files.
 The `wrap-backup.timer` user timer takes a snapshot daily.
 
-On this Mac, `bin/fetch-home-backups` takes a fresh snapshot and copies the server archives to
-`~/Library/Application Support/Wrap/backups`. The `com.rossvz.wrap-backup` LaunchAgent runs this daily
-while the Mac is available. Check its logs under `~/Library/Logs/Wrap/`.
+Backups stay on the mini; no scheduled backup copies run on the Mac.
+GitHub stores the source code, but does not contain the live SQLite database or user data.
+These local backups help recover from application mistakes, but share the server's disk-failure risk.
 Archives are retained until manually removed. They contain private user data; keep them protected.
 
 To restore, stop the app, save the current volume, and extract the chosen archive into the storage volume
