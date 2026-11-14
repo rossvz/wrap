@@ -14,7 +14,12 @@ class MagicLink < ApplicationRecord
 
   class << self
     def consume(code)
-      active.find_by(code: sanitize_code(code))&.consume
+      active.find_by(code: normalize_code(code))&.consume
+    end
+
+    def normalize_code(code)
+      return nil if code.blank?
+      code.to_s.upcase.gsub(/[^A-Z0-9]/, "")
     end
 
     def cleanup
@@ -23,10 +28,6 @@ class MagicLink < ApplicationRecord
 
     private
 
-    def sanitize_code(code)
-      return nil if code.blank?
-      code.to_s.upcase.gsub(/[^A-Z0-9]/, "")
-    end
   end
 
   def consume

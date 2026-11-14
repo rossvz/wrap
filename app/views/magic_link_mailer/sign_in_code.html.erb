@@ -39,11 +39,13 @@
 </head>
 <body>
   <h1>Sign in to Wrap</h1>
-  <p>Enter this code to complete your sign-in:</p>
+  <p>Use this code to complete your sign-in:</p>
   
   <div class="code-box">
     <div class="code"><%= @code %></div>
   </div>
+
+  <p><a href="<%= @sign_in_url %>">Open Wrap and enter your code</a></p>
   
   <p class="expiry">This code expires in 15 minutes.</p>
   
